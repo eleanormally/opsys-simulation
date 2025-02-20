@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   -std=gnu++11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk -g -Wall -Wextra -o CMakeFiles/simulation.dir/main.cpp.o -c /Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/main.cpp",
+  "file": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/main.cpp",
+  "output": "CMakeFiles/simulation.dir/main.cpp.o"
+}
+]

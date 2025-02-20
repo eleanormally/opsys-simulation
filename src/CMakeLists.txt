@@ -6,6 +6,7 @@ set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #including source .cpp files
 set(PROJECT_FILES
   ${PROJECT_SOURCE_DIR}/main.cpp
+  ${PROJECT_SOURCE_DIR}/arg_parser.cpp
 )
 add_executable(${executable}
   ${PROJECT_FILES}

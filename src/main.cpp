@@ -1,5 +1,4 @@
-#include <cstdio>
-int main() {
-  printf("hi\n");
-  return 0;
+#include "arg_parser.h"
+int main(int argc, char** argv) {
+  Arguments args(argc, argv);
 }
