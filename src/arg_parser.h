@@ -1,6 +1,7 @@
 #pragma once
-
 #include <cstddef>
+#include <iostream>
+
 typedef struct Arguments {
   size_t processCount;
   size_t processCountCPUBound;
@@ -11,4 +12,5 @@ typedef struct Arguments {
   double burstTimeAlpha;
   size_t timeSlice;
   Arguments(int argc, char** argv);  //throwable
+  friend std::ostream& operator<<(std::ostream& out, const Arguments& args);
 } Arguments;

@@ -1,7 +1,7 @@
 #include "arg_parser.h"
 #include <stdexcept>
 Arguments::Arguments(int argc, char** argv) {
-  if (argc != 7) {
+  if (argc != 9) {
     throw std::runtime_error("Incorrect number of arguments given.");
   }
   processCount = std::atoi(argv[1]);
@@ -37,4 +37,12 @@ Arguments::Arguments(int argc, char** argv) {
   if (timeSlice == 0) {
     throw std::runtime_error("Cannot parse given time slice.");
   }
+}
+
+std::ostream& operator<<(std::ostream& out, const Arguments& args) {
+  out << "<<< -- process set (n=" << args.processCount << ") with "
+      << args.processCountCPUBound << " CPU-bound process\n";
+  out << "<<< -- seed=" << args.seed << "; lambda=" << args.distributionLambda
+      << "; bound=" << args.randomNumberUpperBound << std::endl;
+  return out;
 }
