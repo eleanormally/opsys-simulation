@@ -12,13 +12,13 @@ enum class EventType {
   ProcessArrived,
   BurstDone,
 };
-struct Event {
+typedef struct Event {
   EventType type;
   union {
     Process* process;
     BurstInstance burst;
   } value;
-};
+} Event;
 
 class Simulation {
   Time globalTime;
@@ -27,6 +27,22 @@ class Simulation {
   std::vector<Process> processes;
   ReadyQueue queue;
   size_t nextProcessIdx;
+  bool inCPUBurst;
+
+  void log(std::string eventDetails) {
+    std::cout << "time " << globalTime << ": " << eventDetails << queue
+              << std::endl;
+  }
+
+  const Process& nextProcess() { return processes[nextProcessIdx]; }
+  void popProcess() { nextProcessIdx++; }
+  bool hasNextProcess() { return nextProcessIdx < processes.size(); }
+  void addProcess(Process* p);
+  void handleBurst(BurstInstance& b);
+  void switchToProcess(Process* p);
+
+  Event getNextEvent();
+  void addEvent(Event& e);
 
  public:
   Simulation(const Arguments& _args, SchedulingAlgorithm _algorithm,
@@ -36,18 +52,7 @@ class Simulation {
         algorithm(_algorithm),
         processes(_processes),
         queue(ReadyQueue(_args, _algorithm)),
-        nextProcessIdx(0) {}
+        nextProcessIdx(0),
+        inCPUBurst(false) {}
   void run();
-
-  void log(std::string eventDetails) {
-    std::cout << globalTime << ": " << eventDetails << queue << std::endl;
-  }
-
-  const Process& nextProcess() { return processes[nextProcessIdx]; }
-  void popProcess() { nextProcessIdx++; }
-  bool hasNextProcess() { return nextProcessIdx < processes.size(); }
-  void addProcess(Process* p);
-  void handleBurst(BurstInstance& b);
-
-  Event getNextEvent();
 };

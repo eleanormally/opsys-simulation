@@ -9,5 +9,11 @@ class Time {
   Time(size_t _utime) : utime(_utime) {}
   bool isNull() const;
   bool operator<(const Time& t) const;
+  void operator+=(const size_t);
+  void operator+=(const Time&);
+  friend Time operator+(Time, const Time&);
+
+  std::string toString() const;
+
   friend std::ostream& operator<<(std::ostream& out, const Time& time);
 };
