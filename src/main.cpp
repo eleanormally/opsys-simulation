@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
             << args.contextSwitchMillis << "ms; alpha=" << args.burstTimeAlpha
             << "; t_slice=" << args.timeSlice << "ms\n";
   for (SchedulingAlgorithm algorithm : listSchedulingAlgorithms()) {
-    runSimulation(args, algorithm, processes);
+    Simulation(args, algorithm, processes).run();
   }
   return EXIT_SUCCESS;
 }
