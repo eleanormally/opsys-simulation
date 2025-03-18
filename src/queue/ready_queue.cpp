@@ -34,6 +34,6 @@ std::array<SchedulingAlgorithm, 4> listSchedulingAlgorithms() {
 }
 
 ReadyQueue::ReadyQueue(Arguments args, SchedulingAlgorithm algorithm) {}
-void ReadyQueue::add(Process& p) {}
-Process ReadyQueue::pop() {}
-const Process& ReadyQueue::peek() {}
+void ReadyQueue::add(Process* p) {}
+Process* ReadyQueue::pop() {}
+const Process* ReadyQueue::peek() {}

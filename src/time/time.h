@@ -8,5 +8,6 @@ class Time {
  public:
   Time(size_t _utime) : utime(_utime) {}
   bool isNull() const;
+  bool operator<(const Time& t) const;
   friend std::ostream& operator<<(std::ostream& out, const Time& time);
 };

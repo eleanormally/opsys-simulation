@@ -31,6 +31,10 @@ class Process {
   size_t burstCount;
   std::vector<BurstTime> burstTimes;
   friend std::ostream& operator<<(std::ostream& out, const Process& p);
+
+ public:
+  Time getArrivalTime() { return arrivalTime; }
+  ID getId() { return id; }
 };
 
 std::vector<Process> generateProcesses(const Arguments args);
