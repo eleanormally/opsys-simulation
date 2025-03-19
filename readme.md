@@ -24,3 +24,7 @@ The following are the required arguments, in order, to provide:
  - [ ] Generate Processes
 ## Eleanor
  - [ ] Write base integration of scheduler
+    - TODO: silent final CPU burst.
+
+
+
