@@ -33,7 +33,19 @@ std::array<SchedulingAlgorithm, 4> listSchedulingAlgorithms() {
   };
 }
 
-ReadyQueue::ReadyQueue(Arguments args, SchedulingAlgorithm algorithm) {}
-void ReadyQueue::add(Process* p) {}
-Process* ReadyQueue::pop() {}
-const Process* ReadyQueue::peek() {}
+ReadyQueue getQueue(Arguments args, SchedulingAlgorithm algorithm) {
+  switch (algorithm) {  
+    case SchedulingAlgorithm::FirstComeFirstServe:
+    case SchedulingAlgorithm::RoundRobin:
+      return ReadyQueueFCFS(args, algorithm);
+    case SchedulingAlgorithm::ShortestJobFirst:
+      return ReadyQueueSJF(args, algorithm);
+    case SchedulingAlgorithm::ShortestRemainingTime:
+      break; // TODO
+    }
+  }
+
+ReadyQueue::ReadyQueue(Arguments args, SchedulingAlgorithm algorithm) {
+    algorithmType = algorithm;
+    timeSlice = args.timeSlice;
+}
