@@ -29,12 +29,12 @@ bool Event::operator<(const Event& e) const {
   int thisOrder = getOrder();
   int eOrder = e.getOrder();
   if (thisOrder != eOrder) {
-    return thisOrder < eOrder;
+    return eOrder < thisOrder;
   }
   if (time != e.time) {
-    return time < e.time;
+    return e.time < time;
   }
-  return getId() < e.getId();
+  return e.getId() < getId();
 }
 
 Event Simulation::popNextEvent() {

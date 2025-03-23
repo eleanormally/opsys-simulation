@@ -13,10 +13,8 @@ enum class SchedulingAlgorithm {
 };
 std::ostream& operator<<(std::ostream& out, const SchedulingAlgorithm& algo);
 std::array<SchedulingAlgorithm, 4> listSchedulingAlgorithms();
-inline const std::string toString(SchedulingAlgorithm a)
-{
-    switch (a)
-    {
+inline const std::string toString(SchedulingAlgorithm a) {
+  switch (a) {
     case SchedulingAlgorithm::RoundRobin:
       return "RR";
     case SchedulingAlgorithm::ShortestJobFirst:
@@ -25,7 +23,7 @@ inline const std::string toString(SchedulingAlgorithm a)
       return "FCFS";
     case SchedulingAlgorithm::ShortestRemainingTime:
       return "SRT";
-    }
+  }
 }
 
 class ReadyQueue {
@@ -35,9 +33,12 @@ class ReadyQueue {
 
  public:
   ReadyQueue(Arguments args, SchedulingAlgorithm algorithm);
-  virtual void add(Process*) {}
+  virtual void add(Process* p) {
+    std::cout << "ERROR: USING BASE READY QUEUE\n";
+  }
   virtual Process* pop() { return NULL; }
   virtual const Process* peek() { return NULL; }
+  virtual std::string toString() const { return ""; }
   friend std::ostream& operator<<(std::ostream& out, const ReadyQueue& r);
 };
 
@@ -56,6 +57,9 @@ class ReadyQueueFCFS : public ReadyQueue {
     return p;
   }
   const Process* peek() { return readyQueue.top(); }
+  std::string toString() const {
+    return "[Q " + std::to_string(readyQueue.size()) + "]";
+  }
   friend std::ostream& operator<<(std::ostream& out, const ReadyQueue& r);
 };
 
@@ -72,21 +76,10 @@ class ReadyQueueSJF : public ReadyQueue {
     return p;
   }
   const Process* peek() { return readyQueue.top(); }
+  std::string toString() const {
+    return "[Q " + std::to_string(readyQueue.size()) + "]";
+  }
   friend std::ostream& operator<<(std::ostream& out, const ReadyQueue& r);
 };
 
-  static ReadyQueue initReadyQueue(Arguments args, SchedulingAlgorithm algorithm) {
-    switch (algorithm) {
-      case SchedulingAlgorithm::FirstComeFirstServe:
-        return ReadyQueueFCFS(args, algorithm);
-        break;
-      case SchedulingAlgorithm::ShortestJobFirst:
-        return ReadyQueueSJF(args, algorithm);
-        break;
-      case SchedulingAlgorithm::ShortestRemainingTime:
-      case SchedulingAlgorithm::RoundRobin:
-        break;
-      default:
-        return ReadyQueue(args, algorithm);
-    }
-  }
+ReadyQueue* initReadyQueue(Arguments args, SchedulingAlgorithm algorithm);

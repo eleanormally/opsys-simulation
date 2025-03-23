@@ -1,8 +1,22 @@
 #include "ready_queue.h"
 
+ReadyQueue* initReadyQueue(Arguments args, SchedulingAlgorithm algorithm) {
+  ReadyQueueFCFS* rq = new ReadyQueueFCFS(args, algorithm);
+  return rq;
+  switch (algorithm) {
+    case SchedulingAlgorithm::FirstComeFirstServe:
+      break;
+    case SchedulingAlgorithm::ShortestJobFirst:
+      return new ReadyQueueSJF(args, algorithm);
+      break;
+    case SchedulingAlgorithm::ShortestRemainingTime:
+    case SchedulingAlgorithm::RoundRobin:
+      break;
+  }
+  return new ReadyQueue(args, algorithm);
+}
 std::ostream& operator<<(std::ostream& out, const ReadyQueue& r) {
-  //TODO
-  out << "[Q empty]";
+  out << r.toString();
   return out;
 }
 
