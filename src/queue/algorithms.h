@@ -9,13 +9,13 @@ class Compare {
 class CompareFCFS : Compare {
  public:
   bool operator()(Process* p1, Process* p2) {
-    return (*p1).getArrivalTime() < (*p2).getArrivalTime();
+    return (*p1).getArrivalTime() > (*p2).getArrivalTime();
   }
 };
 
-class CompareSJF : Compare{
-  public:
-    bool operator() (Process* p1, Process* p2) {
-      return (*p1).getTau() < (*p2).getTau();
-    }
+class CompareSJF : Compare {
+ public:
+  bool operator()(Process* p1, Process* p2) {
+    return (*p1).getTau() < (*p2).getTau();
+  }
 };
