@@ -16,7 +16,7 @@ ReadyQueue* initReadyQueue(Arguments args, SchedulingAlgorithm algorithm) {
   return new ReadyQueue(args, algorithm);
 }
 std::ostream& operator<<(std::ostream& out, const ReadyQueue& r) {
-  out << r.toString();
+  out << "[Q" << (r).toString() << "]";
   return out;
 }
 
@@ -49,4 +49,28 @@ ReadyQueue getQueue(Arguments args, SchedulingAlgorithm algorithm) {
 ReadyQueue::ReadyQueue(Arguments args, SchedulingAlgorithm algorithm) {
   algorithmType = algorithm;
   timeSlice = args.timeSlice;
+}
+
+std::string ReadyQueueSJF::toString() const {
+  std::priority_queue<Process*, std::vector<Process*>, CompareSJF> queueCopy = readyQueue;
+  std::string allProcesses = "";
+
+  while(!queueCopy.empty()) {
+    Process* p = (queueCopy.top());
+    allProcesses = allProcesses + (*p).getId().toString();
+    queueCopy.pop();
+  }
+  return (allProcesses == "") ? "empty" : allProcesses;
+}
+
+std::string ReadyQueueFCFS::toString() const {
+  std::priority_queue<Process*, std::vector<Process*>, CompareFCFS> queueCopy = readyQueue;
+  std::string allProcesses = "";
+
+  while(!queueCopy.empty()) {
+    Process* p = (queueCopy.top());
+    allProcesses += " " + (*p).getId().toString();
+    queueCopy.pop();
+  }
+  return (allProcesses == "") ? "empty" : allProcesses;
 }

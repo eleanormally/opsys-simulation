@@ -33,6 +33,7 @@ class ReadyQueue {
 
  public:
   ReadyQueue(Arguments args, SchedulingAlgorithm algorithm);
+  virtual bool isEmpty() const { return true; }
   virtual void add(Process* p) {
     std::cout << "ERROR: USING BASE READY QUEUE\n";
   }
@@ -50,6 +51,7 @@ class ReadyQueueFCFS : public ReadyQueue {
  public:
   ReadyQueueFCFS(Arguments args, SchedulingAlgorithm algorithm)
       : ReadyQueue(args, algorithm) {}
+  virtual bool isEmpty() const { return readyQueue.empty(); }
   void add(Process* p) { readyQueue.push(p); }
   Process* pop() {
     Process* p = readyQueue.top();
@@ -57,9 +59,7 @@ class ReadyQueueFCFS : public ReadyQueue {
     return p;
   }
   const Process* peek() { return readyQueue.top(); }
-  std::string toString() const {
-    return "[Q " + std::to_string(readyQueue.size()) + "]";
-  }
+  std::string toString() const;
   friend std::ostream& operator<<(std::ostream& out, const ReadyQueue& r);
 };
 
@@ -69,6 +69,7 @@ class ReadyQueueSJF : public ReadyQueue {
  public:
   ReadyQueueSJF(Arguments args, SchedulingAlgorithm algorithm)
       : ReadyQueue(args, algorithm) {}
+  virtual bool isEmpty() const { return readyQueue.empty(); }
   void add(Process* p) { readyQueue.push(p); }
   Process* pop() {
     Process* p = readyQueue.top();
@@ -76,9 +77,7 @@ class ReadyQueueSJF : public ReadyQueue {
     return p;
   }
   const Process* peek() { return readyQueue.top(); }
-  std::string toString() const {
-    return "[Q " + std::to_string(readyQueue.size()) + "]";
-  }
+  std::string toString() const;
   friend std::ostream& operator<<(std::ostream& out, const ReadyQueue& r);
 };
 
