@@ -50,3 +50,7 @@ const Event& Simulation::peekNextEvent() {
 bool Simulation::hasNextEvent() const {
   return !events.empty();
 }
+
+void Simulation::addEvent(Event& e) {
+  events.push(e);
+}
