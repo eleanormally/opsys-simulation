@@ -30,6 +30,7 @@ std::vector<Process> generateProcesses(const Arguments args) {
       bursts.push_back(BurstTime{cpuTime, ioTime});
     }
     Process p(id, arrival, numBursts, bursts, tau, isCpuBound);
+    processes.push_back(p);
   }
   return processes;
 }
