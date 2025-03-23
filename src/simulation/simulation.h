@@ -29,17 +29,17 @@ class Simulation {
   SchedulingAlgorithm algorithm;
   std::vector<Process> processes;
   std::priority_queue<Event> events;
-  ReadyQueue queue;
+  ReadyQueue* queue;
   size_t nextProcessIdx;
   bool inCPUBurst;
 
   void log(std::string eventDetails) {
-    std::cout << "time " << globalTime << ": " << eventDetails << queue
+    std::cout << "time " << globalTime << ": " << eventDetails << " " << *queue
               << std::endl;
   }
   void log(const Process* const p, std::string eventDetails) {
     std::cout << "time " << globalTime << ": " << p->toString() << " "
-              << eventDetails << queue << std::endl;
+              << eventDetails << " " << *queue << std::endl;
   }
 
   const Process& nextProcess() { return processes[nextProcessIdx]; }
@@ -76,5 +76,6 @@ class Simulation {
       addEvent(e);
     }
   }
+  ~Simulation() { delete queue; }
   void run();
 };

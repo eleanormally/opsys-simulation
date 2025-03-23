@@ -273,6 +273,30 @@ random/random.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/simulation.dir/build.make CMakeFiles/simulation.dir/random/random.cpp.s
 .PHONY : random/random.cpp.s
 
+simulation/events.o: simulation/events.cpp.o
+.PHONY : simulation/events.o
+
+# target to build an object file
+simulation/events.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simulation.dir/build.make CMakeFiles/simulation.dir/simulation/events.cpp.o
+.PHONY : simulation/events.cpp.o
+
+simulation/events.i: simulation/events.cpp.i
+.PHONY : simulation/events.i
+
+# target to preprocess a source file
+simulation/events.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simulation.dir/build.make CMakeFiles/simulation.dir/simulation/events.cpp.i
+.PHONY : simulation/events.cpp.i
+
+simulation/events.s: simulation/events.cpp.s
+.PHONY : simulation/events.s
+
+# target to generate assembly for a file
+simulation/events.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/simulation.dir/build.make CMakeFiles/simulation.dir/simulation/events.cpp.s
+.PHONY : simulation/events.cpp.s
+
 simulation/simulation.o: simulation/simulation.cpp.o
 .PHONY : simulation/simulation.o
 
@@ -348,6 +372,9 @@ help:
 	@echo "... random/random.o"
 	@echo "... random/random.i"
 	@echo "... random/random.s"
+	@echo "... simulation/events.o"
+	@echo "... simulation/events.i"
+	@echo "... simulation/events.s"
 	@echo "... simulation/simulation.o"
 	@echo "... simulation/simulation.i"
 	@echo "... simulation/simulation.s"

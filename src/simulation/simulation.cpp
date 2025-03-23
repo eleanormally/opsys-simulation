@@ -2,9 +2,10 @@
 
 void Simulation::run() {
   std::cout << globalTime << ": Siumlation started for " << algorithm << " "
-            << queue << std::endl;
+            << *queue << std::endl;
   while (hasNextEvent()) {
     Event e = popNextEvent();
+    globalTime = e.time;
     switch (e.type) {
       case EventType::ProcessArrived:
         addProcess(e.value.process);
@@ -19,15 +20,19 @@ void Simulation::run() {
 }
 
 void Simulation::addProcess(Process* p) {
-  log(p, " arrived; added to ready queue");
-  queue.add(p);
+  queue->add(p);
+  log(p, "arrived; added to ready queue");
+  if (!inCPUBurst) {
+    switchToNextProcess();
+  }
 }
 
 void Simulation::switchToNextProcess() {
-  Process* p = queue.pop();
+  Process* p = queue->pop();
   globalTime += 2;
   Time burstTime = p->getCurrentBurst().cpuBurstTime;
   log(p, "started using the CPU for " + burstTime.toString() + "burst");
+  inCPUBurst = true;
   Event e = {
       .type = EventType::BurstDone,
       .time = burstTime + globalTime,
@@ -50,6 +55,7 @@ void Simulation::handleBurst(BurstInstance& b) {
       log(b.process, "terminated");
       globalTime += 2;
     }
+    inCPUBurst = false;
     log(b.process, "completed a CPU burst; " + numBurstsRemaining + " to go");
 
     //generate IO burst
@@ -77,7 +83,7 @@ void Simulation::handleBurst(BurstInstance& b) {
     addEvent(e);
   } else {
     b.process->incrementBurst();
-    queue.add(b.process);
+    queue->add(b.process);
     log(b.process, "completed I/O; added to ready queue");
   }
 }
