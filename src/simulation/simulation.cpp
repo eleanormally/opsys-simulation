@@ -29,6 +29,8 @@ void Simulation::addProcess(Process* p) {
 }
 
 void Simulation::switchToNextProcess() {
+  if (queue->isEmpty() || inCPUBurst)
+    return;
   Process* p = queue->pop();
   globalTime += 2;
   Time burstTime = p->getCurrentBurst().cpuBurstTime;
@@ -52,12 +54,12 @@ void Simulation::handleBurst(BurstInstance& b) {
   if (b.isInCpuPhase) {
     std::string numBurstsRemaining =
         std::to_string((b.process->numRemainingBursts() - 1));
+    inCPUBurst = false;
     if (numBurstsRemaining == "0") {
       log(b.process, "terminated");
       globalTime += 2;
       return;
     }
-    inCPUBurst = false;
     std::string burstWord = "burst";
     if (numBurstsRemaining != "1") {
       burstWord += "s";
@@ -92,5 +94,11 @@ void Simulation::handleBurst(BurstInstance& b) {
     b.process->incrementBurst();
     queue->add(b.process);
     log(b.process, "completed I/O; added to ready queue");
+    Event e = {
+        .type = EventType::ProcessSwitchIn,
+        .time = globalTime,
+        .value = {},
+    };
+    addEvent(e);
   }
 }

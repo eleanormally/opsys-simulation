@@ -34,6 +34,7 @@ class ReadyQueue {
  public:
   virtual ~ReadyQueue() {}
   ReadyQueue(Arguments args, SchedulingAlgorithm algorithm);
+  virtual bool isEmpty() const { return true; }
   virtual void add(Process*) { std::cout << "ERROR: USING BASE READY QUEUE\n"; }
   virtual Process* pop() { return NULL; }
   virtual const Process* peek() { return NULL; }
@@ -48,6 +49,7 @@ class ReadyQueueFCFS : public ReadyQueue {
   ~ReadyQueueFCFS() {}
   ReadyQueueFCFS(Arguments args, SchedulingAlgorithm algorithm)
       : ReadyQueue(args, algorithm) {}
+  bool isEmpty() const { return readyQueue.size() == 0; }
   void add(Process* p) { readyQueue.push(p); }
   Process* pop() {
     Process* p = readyQueue.front();
@@ -68,6 +70,7 @@ class ReadyQueueSJF : public ReadyQueue {
   ~ReadyQueueSJF() {}
   ReadyQueueSJF(Arguments args, SchedulingAlgorithm algorithm)
       : ReadyQueue(args, algorithm) {}
+  bool isEmpty() const { return readyQueue.size() == 0; }
   void add(Process* p) { readyQueue.push(p); }
   Process* pop() {
     Process* p = readyQueue.top();
