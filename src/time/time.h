@@ -9,6 +9,7 @@ class Time {
   Time(size_t _utime) : utime(_utime) {}
   bool isNull() const;
   bool operator<(const Time& t) const;
+  bool operator==(const Time& t) const;
   void operator+=(const size_t);
   void operator+=(const Time&);
   friend Time operator+(Time, const Time&);
