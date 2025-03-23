@@ -38,3 +38,30 @@ ReadyQueue::ReadyQueue(Arguments args, SchedulingAlgorithm algorithm) {
   algorithmType = algorithm;
   timeSlice = args.timeSlice;
 }
+std::string ReadyQueueFCFS::toString() const {
+  if (readyQueue.size() == 0) {
+    return "[Q empty]";
+  }
+  std::string out = "[Q";
+  std::queue<Process*> queueCopy = readyQueue;
+  while (queueCopy.size() > 0) {
+    out += " " + queueCopy.front()->getId().toString();
+    queueCopy.pop();
+  }
+  out += "]";
+  return out;
+}
+std::string ReadyQueueSJF::toString() const {
+  std::priority_queue<Process*, std::vector<Process*>, CompareSJF> queueCopy =
+      readyQueue;
+  std::string allProcesses = "[Q ";
+
+  while (!queueCopy.empty()) {
+    Process* p = (queueCopy.top());
+    allProcesses = allProcesses + (*p).getId().toString();
+    queueCopy.pop();
+  }
+  allProcesses = (allProcesses == "") ? "empty" : allProcesses;
+  allProcesses += "]";
+  return allProcesses;
+}

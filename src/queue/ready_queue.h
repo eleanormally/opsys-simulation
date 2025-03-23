@@ -57,9 +57,7 @@ class ReadyQueueFCFS : public ReadyQueue {
     return p;
   }
   const Process* peek() { return readyQueue.front(); }
-  std::string toString() const {
-    return "[Q " + std::to_string(readyQueue.size()) + "]";
-  }
+  std::string toString() const;
   friend std::ostream& operator<<(std::ostream& out, const ReadyQueue& r);
 };
 
@@ -78,9 +76,7 @@ class ReadyQueueSJF : public ReadyQueue {
     return p;
   }
   const Process* peek() { return readyQueue.top(); }
-  std::string toString() const {
-    return "[Q " + std::to_string(readyQueue.size()) + "]";
-  }
+  std::string toString() const;
   friend std::ostream& operator<<(std::ostream& out, const ReadyQueue& r);
 };
 

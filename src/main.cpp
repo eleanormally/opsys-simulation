@@ -1,3 +1,4 @@
+#include <iomanip>
 #include "arg_parser.h"
 #include "process/process.h"
 #include "queue/ready_queue.h"
@@ -11,7 +12,8 @@ int main(int argc, char** argv) {
     std::cout << p << std::endl;
   }
   std::cout << "<<< PROJECT SIMULATIONS\n<<< -- t_cs="
-            << args.contextSwitchMillis << "ms; alpha=" << args.burstTimeAlpha
+            << args.contextSwitchMillis * 2 << "ms; alpha=" << std::fixed
+            << std::setprecision(2) << args.burstTimeAlpha
             << "; t_slice=" << args.timeSlice << "ms\n";
   for (SchedulingAlgorithm algorithm : listSchedulingAlgorithms()) {
     Simulation(args, algorithm, processes).run();
