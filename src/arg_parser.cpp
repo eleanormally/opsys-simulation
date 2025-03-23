@@ -17,7 +17,7 @@ Arguments::Arguments(int argc, char** argv) {
     throw std::runtime_error(
         "Cannot parse given pseudo-random generator seed.");
   }
-  distributionLambda = std::atoi(argv[4]);
+  distributionLambda = std::atof(argv[4]);
   if (distributionLambda == 0) {
     throw std::runtime_error("Cannot parse given distribution lambda.");
   }

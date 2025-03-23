@@ -6,7 +6,7 @@ typedef struct Arguments {
   size_t processCount;
   size_t processCountCPUBound;
   size_t seed;
-  size_t distributionLambda;
+  double distributionLambda;
   size_t randomNumberUpperBound;
   size_t contextSwitchMillis;
   double burstTimeAlpha;

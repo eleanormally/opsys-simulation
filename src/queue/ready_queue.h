@@ -1,6 +1,9 @@
 #pragma once
 #include "../arg_parser.h"
 #include "../process/process.h"
+#include "../queue/algorithms.h"
+#include <queue>
+#include <array>
 
 enum class SchedulingAlgorithm {
   FirstComeFirstServe,
@@ -12,12 +15,39 @@ std::ostream& operator<<(std::ostream& out, const SchedulingAlgorithm& algo);
 std::array<SchedulingAlgorithm, 4> listSchedulingAlgorithms();
 
 class ReadyQueue {
-  int temp;
+  protected:
+   SchedulingAlgorithm algorithmType;
+   size_t timeSlice;
 
  public:
   ReadyQueue(Arguments args, SchedulingAlgorithm algorithm);
-  void add(Process* p);
-  Process* pop();
-  const Process* peek();
+  virtual void add(Process* p) {}
+  virtual Process* pop() { return NULL; }
+  virtual const Process* peek() { return NULL; }
   friend std::ostream& operator<<(std::ostream& out, const ReadyQueue& r);
 };
+
+ReadyQueue getQueue(Arguments args, SchedulingAlgorithm algorithm);
+
+class ReadyQueueFCFS : public ReadyQueue {
+  std::priority_queue<Process*, std::vector<Process*>, CompareFCFS> readyQueue;
+
+  public:
+    ReadyQueueFCFS(Arguments args, SchedulingAlgorithm algorithm) : ReadyQueue(args, algorithm) {}
+    void add(Process* p) { readyQueue.push(p); }
+    Process* pop() { Process* p = readyQueue.top(); readyQueue.pop(); return p; }
+    const Process* peek() { return readyQueue.top();  }
+    friend std::ostream& operator<<(std::ostream& out, const ReadyQueue& r);
+};
+
+class ReadyQueueSJF : public ReadyQueue {
+  std::priority_queue<Process*, std::vector<Process*>, CompareSJF> readyQueue;
+  
+  public:
+    ReadyQueueSJF(Arguments args, SchedulingAlgorithm algorithm) : ReadyQueue(args, algorithm) {}
+    void add(Process* p) { readyQueue.push(p); }
+    Process* pop() { Process* p = readyQueue.top(); readyQueue.pop(); return p; }
+    const Process* peek() { return readyQueue.top();  }
+    friend std::ostream& operator<<(std::ostream& out, const ReadyQueue& r);
+};
+  
