@@ -11,9 +11,8 @@ void Simulation::run() {
         break;
       case EventType::BurstDone:
         handleBurst(e.value.burst);
-    }
-    if (!inCPUBurst) {
-      switchToProcess(e.value.process);
+      case EventType::ProcessSwitchIn:
+        switchToNextProcess();
     }
   }
   log("Simulator ended for " + toString(algorithm));
@@ -24,7 +23,8 @@ void Simulation::addProcess(Process* p) {
   queue.add(p);
 }
 
-void Simulation::switchToProcess(Process* p) {
+void Simulation::switchToNextProcess() {
+  Process* p = queue.pop();
   globalTime += 2;
   Time burstTime = p->getCurrentBurst().cpuBurstTime;
   log(p, "started using the CPU for " + burstTime.toString() + "burst");
@@ -68,7 +68,12 @@ void Simulation::handleBurst(BurstInstance& b) {
     log(b.process, "switching out of the CPU; blocking on I/O until time " +
                        e.time.toString());
     addEvent(e);
-    globalTime += 2;
+    e = {
+        .type = EventType::ProcessSwitchIn,
+        .time = globalTime + 2,
+        .value = {},
+    };
+    addEvent(e);
   } else {
     b.process->incrementBurst();
     queue.add(b.process);

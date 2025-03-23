@@ -9,6 +9,7 @@ ID Event::getId() const {
 }
 
 bool Event::operator<(const Event& e) const {
+
   if (time == e.time) {
     return getId() < e.getId();
   }
