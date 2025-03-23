@@ -8,6 +8,7 @@ set(PROJECT_FILES
   ${PROJECT_SOURCE_DIR}/main.cpp
   ${PROJECT_SOURCE_DIR}/arg_parser.cpp
   ${PROJECT_SOURCE_DIR}/simulation/simulation.cpp
+  ${PROJECT_SOURCE_DIR}/simulation/events.cpp
   ${PROJECT_SOURCE_DIR}/time/time.cpp
   ${PROJECT_SOURCE_DIR}/random/random.cpp
   ${PROJECT_SOURCE_DIR}/queue/ready_queue.cpp
