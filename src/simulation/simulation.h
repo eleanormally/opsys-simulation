@@ -19,6 +19,7 @@ typedef struct Event {
     BurstInstance burst;
   } value;
   bool operator<(const Event& e) const;
+  int getOrder() const;
   ID getId() const;
 } Event;
 

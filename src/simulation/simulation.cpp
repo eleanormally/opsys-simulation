@@ -65,8 +65,9 @@ void Simulation::handleBurst(BurstInstance& b) {
                 },
             },
     };
-    log(b.process, "switching out of the CPU; blocking on I/O until time " +
-                       e.time.toString());
+    log(b.process->toString() +
+        "switching out of the CPU; blocking on I/O until time " +
+        e.time.toString());
     addEvent(e);
     e = {
         .type = EventType::ProcessSwitchIn,
