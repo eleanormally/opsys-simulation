@@ -1,8 +1,8 @@
 #include "simulation.h"
 
 void Simulation::run() {
-  std::cout << globalTime << ": Siumlation started for " << algorithm << " "
-            << *queue << std::endl;
+  std::cout << "time " << globalTime << ": Simulator started for " << algorithm
+            << " " << *queue << std::endl;
   while (hasNextEvent()) {
     Event e = popNextEvent();
     globalTime = e.time;
@@ -32,7 +32,7 @@ void Simulation::switchToNextProcess() {
   if (queue->isEmpty() || inCPUBurst)
     return;
   Process* p = queue->pop();
-  globalTime += 2;
+  globalTime += args.contextSwitchMillis;
   Time burstTime = p->getCurrentBurst().cpuBurstTime;
   log(p, "started using the CPU for " + burstTime.toString() + " burst");
   inCPUBurst = true;
@@ -57,7 +57,7 @@ void Simulation::handleBurst(BurstInstance& b) {
     inCPUBurst = false;
     if (numBurstsRemaining == "0") {
       log(b.process, "terminated");
-      globalTime += 2;
+      globalTime += args.contextSwitchMillis;
       return;
     }
     std::string burstWord = "burst";
@@ -71,7 +71,7 @@ void Simulation::handleBurst(BurstInstance& b) {
     const BurstTime& ioBurst = b.process->getCurrentBurst();
     Event e = {
         .type = EventType::BurstDone,
-        .time = ioBurst.ioBurstTime + globalTime + 2,
+        .time = ioBurst.ioBurstTime + globalTime + args.contextSwitchMillis,
         .value =
             {
                 .burst{
@@ -81,12 +81,12 @@ void Simulation::handleBurst(BurstInstance& b) {
             },
     };
     log(b.process->toString() +
-        " switching out of the CPU; blocking on I/O until time " +
+        " switching out of CPU; blocking on I/O until time " +
         e.time.toString());
     addEvent(e);
     Event e2 = {
         .type = EventType::ProcessSwitchIn,
-        .time = globalTime + 2,
+        .time = globalTime + args.contextSwitchMillis,
         .value = {},
     };
     addEvent(e2);

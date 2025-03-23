@@ -1,4 +1,5 @@
 #include "arg_parser.h"
+#include <iomanip>
 #include <stdexcept>
 Arguments::Arguments(int argc, char** argv) {
   if (argc != 9) {
@@ -26,6 +27,7 @@ Arguments::Arguments(int argc, char** argv) {
     throw std::runtime_error("Cannot parse given random number upper bound.");
   }
   contextSwitchMillis = std::atoi(argv[6]);
+  contextSwitchMillis /= 2;
   if (contextSwitchMillis == 0) {
     throw std::runtime_error("Cannot parse given context switching time.");
   }
@@ -42,7 +44,8 @@ Arguments::Arguments(int argc, char** argv) {
 std::ostream& operator<<(std::ostream& out, const Arguments& args) {
   out << "<<< -- process set (n=" << args.processCount << ") with "
       << args.processCountCPUBound << " CPU-bound process\n";
-  out << "<<< -- seed=" << args.seed << "; lambda=" << args.distributionLambda
-      << "; bound=" << args.randomNumberUpperBound << std::endl;
+  out << "<<< -- seed=" << args.seed << "; lambda=" << std::fixed
+      << args.distributionLambda << "; bound=" << args.randomNumberUpperBound
+      << std::endl;
   return out;
 }
