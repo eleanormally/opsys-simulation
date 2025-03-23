@@ -13,10 +13,9 @@ class CompareFCFS : Compare {
   }
 };
 
-class CompareSJF : Compare {
- public:
-  bool operator()(Process* p1, Process* p2) {
-    return (*p1).getPredictedBurstTime().cpuBurstTime <
-           (*p2).getPredictedBurstTime().cpuBurstTime;
-  }
+class CompareSJF : Compare{
+  public:
+    bool operator() (Process* p1, Process* p2) {
+      return (*p1).getTau() < (*p2).getTau();
+    }
 };

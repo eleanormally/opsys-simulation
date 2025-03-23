@@ -11,6 +11,7 @@ class ID {
   std::array<char, 2> _id;
 
  public:
+  ID(char first, char second) : _id{first, second} {}
   std::string toString() const {
     std::string out = "  ";
     out[0] = _id[0];
@@ -31,25 +32,35 @@ typedef struct BurstTime {
 } BurstTime;
 
 class Process {
- private:
-  ID id;
-  Time arrivalTime;
-  BurstTime predictedTime;
-  size_t burstCount;
-  std::vector<BurstTime> burstTimes;
-  size_t burstIndex;
-  friend std::ostream& operator<<(std::ostream& out, const Process& p);
-
- public:
-  Process(ID my_id) { id = my_id; }
-  Time getArrivalTime() { return arrivalTime; }
-  BurstTime getPredictedBurstTime() { return predictedTime; }
-  ID getId() { return id; }
-  std::string toString() const { return "Process " + id.toString(); }
-  const BurstTime& getCurrentBurst() const { return burstTimes[burstIndex]; }
-  void incrementBurst() { burstIndex++; }
-  bool hasNextBurst() { return burstIndex < burstTimes.size(); }
-  size_t numRemainingBursts() const { return burstCount - burstIndex; }
+  private:
+    ID id;
+    Time arrivalTime;
+    size_t burstCount;
+    std::vector<BurstTime> burstTimes;
+    size_t burstIndex;
+    Time tau;
+    bool cpuBound;
+    friend std::ostream& operator<<(std::ostream& out, const Process& p);
+   
+  public:
+    Process(ID _id, Time _time, size_t _burstCount, std::vector<BurstTime> _burstTimes, Time _tau, bool _cpuBound) :
+      id(_id),
+      arrivalTime(_time),
+      burstCount(_burstCount),
+      burstTimes(_burstTimes),
+      tau(_tau),
+      cpuBound(_cpuBound) {}
+    Time getArrivalTime() const { return arrivalTime; }
+    ID getId() { return id; }
+    bool isCpuBound() const { return cpuBound; }
+    std::string toString() const { return "Process " + id.toString() + "  Time " + arrivalTime.toString(); }
+    Time getTau() { return tau; }
+    const BurstTime& getCurrentBurst() const { return burstTimes[burstIndex]; }
+    void incrementBurst() { burstIndex++; }
+    bool hasNextBurst() { return burstIndex < burstTimes.size(); }
+    std::vector<BurstTime> getAllBursts() const { return burstTimes; }
+    size_t getBurstCount() const { return burstCount; }
+    size_t numRemainingBursts() const { return burstCount - burstIndex; }
 };
 
 std::vector<Process> generateProcesses(const Arguments args);

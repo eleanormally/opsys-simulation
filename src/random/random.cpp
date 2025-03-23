@@ -1,10 +1,16 @@
 #include "random.h"
 #include <cmath>
+#include <stdlib.h>
 
 double Random::next_exp() const {
-  return -1 * log(next_uniform()) / lambda;
+  double exp;
+  do {
+    exp  = -1 * log(next_uniform()) / lambda;
+  } while (exp > upperBound);
+  
+  return exp;
 }
+
 double Random::next_uniform() const {
-  //TODO
-  return 0;
+  return drand48();
 }
