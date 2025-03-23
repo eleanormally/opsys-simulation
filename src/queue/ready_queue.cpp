@@ -64,11 +64,11 @@ std::string ReadyQueueSJF::toString() const {
 }
 
 std::string ReadyQueueFCFS::toString() const {
-  std::priority_queue<Process*, std::vector<Process*>, CompareFCFS> queueCopy = readyQueue;
+  std::queue<Process*> queueCopy = readyQueue;
   std::string allProcesses = "";
 
   while(!queueCopy.empty()) {
-    Process* p = (queueCopy.top());
+    Process* p = (queueCopy.front());
     allProcesses += " " + (*p).getId().toString();
     queueCopy.pop();
   }

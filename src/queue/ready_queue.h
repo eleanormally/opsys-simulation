@@ -46,7 +46,7 @@ class ReadyQueue {
 ReadyQueue getQueue(Arguments args, SchedulingAlgorithm algorithm);
 
 class ReadyQueueFCFS : public ReadyQueue {
-  std::priority_queue<Process*, std::vector<Process*>, CompareFCFS> readyQueue;
+  std::queue<Process*> readyQueue;
 
  public:
   ReadyQueueFCFS(Arguments args, SchedulingAlgorithm algorithm)
@@ -54,11 +54,11 @@ class ReadyQueueFCFS : public ReadyQueue {
   virtual bool isEmpty() const { return readyQueue.empty(); }
   void add(Process* p) { readyQueue.push(p); }
   Process* pop() {
-    Process* p = readyQueue.top();
+    Process* p = readyQueue.front();
     readyQueue.pop();
     return p;
   }
-  const Process* peek() { return readyQueue.top(); }
+  const Process* peek() { return readyQueue.front(); }
   std::string toString() const;
   friend std::ostream& operator<<(std::ostream& out, const ReadyQueue& r);
 };
