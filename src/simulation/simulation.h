@@ -2,10 +2,8 @@
 #include "../queue/ready_queue.h"
 
 typedef struct BurstInstance {
-  Time completionTime;
   Process* process;
   bool isInCpuPhase;
-  bool operator<(const BurstInstance& b) const;
 } BurstInstance;
 
 enum class EventType {
@@ -14,10 +12,13 @@ enum class EventType {
 };
 typedef struct Event {
   EventType type;
+  Time time;
   union {
     Process* process;
     BurstInstance burst;
   } value;
+  bool operator<(const Event& e) const;
+  ID getId() const;
 } Event;
 
 class Simulation {
@@ -25,6 +26,7 @@ class Simulation {
   const Arguments& args;
   SchedulingAlgorithm algorithm;
   std::vector<Process> processes;
+  std::priority_queue<Event> events;
   ReadyQueue queue;
   size_t nextProcessIdx;
   bool inCPUBurst;
@@ -32,6 +34,10 @@ class Simulation {
   void log(std::string eventDetails) {
     std::cout << "time " << globalTime << ": " << eventDetails << queue
               << std::endl;
+  }
+  void log(const Process* const p, std::string eventDetails) {
+    std::cout << "time " << globalTime << ": " << p->toString() << " "
+              << eventDetails << queue << std::endl;
   }
 
   const Process& nextProcess() { return processes[nextProcessIdx]; }
@@ -41,7 +47,9 @@ class Simulation {
   void handleBurst(BurstInstance& b);
   void switchToProcess(Process* p);
 
-  Event getNextEvent();
+  Event popNextEvent();
+  const Event& peekNextEvent();
+  bool hasNextEvent() const;
   void addEvent(Event& e);
 
  public:
@@ -51,8 +59,20 @@ class Simulation {
         args(_args),
         algorithm(_algorithm),
         processes(_processes),
-        queue(ReadyQueue(_args, _algorithm)),
+        queue(initReadyQueue(_args, _algorithm)),
         nextProcessIdx(0),
-        inCPUBurst(false) {}
+        inCPUBurst(false) {
+    for (Process& p : processes) {
+      Event e = {
+          .type = EventType::ProcessArrived,
+          .time = p.getArrivalTime(),
+          .value =
+              {
+                  .process = &p,
+              },
+      };
+      addEvent(e);
+    }
+  }
   void run();
 };

@@ -3,6 +3,9 @@
 bool Time::operator<(const Time& t) const {
   return utime < t.utime;
 }
+bool Time::operator==(const Time& t) const {
+  return utime == t.utime;
+}
 void Time::operator+=(const size_t increment) {
   utime += increment;
 }
