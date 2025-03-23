@@ -56,7 +56,7 @@ class Simulation {
 
  public:
   Simulation(const Arguments& _args, SchedulingAlgorithm _algorithm,
-             const std::vector<Process>& _processes)
+             std::vector<Process> _processes)
       : globalTime(Time(0)),
         args(_args),
         algorithm(_algorithm),
@@ -64,13 +64,14 @@ class Simulation {
         queue(initReadyQueue(_args, _algorithm)),
         nextProcessIdx(0),
         inCPUBurst(false) {
-    for (Process& p : processes) {
+    for (size_t i = 0; i < processes.size(); i++) {
+      Process* p = &processes[i];
       Event e = {
           .type = EventType::ProcessArrived,
-          .time = p.getArrivalTime(),
+          .time = p->getArrivalTime(),
           .value =
               {
-                  .process = &p,
+                  .process = p,
               },
       };
       addEvent(e);

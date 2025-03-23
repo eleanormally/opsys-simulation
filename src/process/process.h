@@ -49,6 +49,7 @@ class Process {
         arrivalTime(_time),
         burstCount(_burstCount),
         burstTimes(_burstTimes),
+        burstIndex(0),
         tau(_tau),
         cpuBound(_cpuBound) {}
   Time getArrivalTime() const { return arrivalTime; }
