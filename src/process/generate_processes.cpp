@@ -39,20 +39,18 @@ std::vector<Process> generateProcesses(const Arguments args) {
   return processes;
 }
 
-double divideAndRound(double sum, size_t count) {
+double divideAndRound(Time sum, size_t count) {
 	if (count == 0) {
 		return 0;
 	} else {
-		double average = sum / count;
+		double average = ((double) sum.getUnderlying()) / count;
 		return std::ceil(average * 1000) / 1000; 
 	}
 }
 
 void outputAverages(const Arguments args, std::vector<Process> processes) {
-	double cpuBoundCpuBurst = 0;
-	double ioBoundCpuBurst = 0;
-	double cpuBoundIoBurst = 0;
-	double ioBoundIoBurst = 0;
+	BurstTime cpuBoundSums;
+	BurstTime ioBoundSums;
 	size_t ioBoundBurstCount = 0;
 	size_t cpuBoundBurstCount = 0;
 
@@ -64,11 +62,11 @@ void outputAverages(const Arguments args, std::vector<Process> processes) {
 		}
 		for (BurstTime burst : p.getAllBursts()){
 			if (p.isCpuBound()) {
-				cpuBoundCpuBurst += burst.cpuBurstTime.getUnderlying();
-				cpuBoundIoBurst += burst.ioBurstTime.getUnderlying();
+				cpuBoundSums.cpuBurstTime += burst.cpuBurstTime;
+				cpuBoundSums.ioBurstTime += burst.ioBurstTime;
 			} else {
-				ioBoundCpuBurst += burst.cpuBurstTime.getUnderlying();
-				ioBoundIoBurst += burst.ioBurstTime.getUnderlying();
+				ioBoundSums.cpuBurstTime += burst.cpuBurstTime;
+				ioBoundSums.ioBurstTime += burst.ioBurstTime;
 			}
 		}
 	}
@@ -82,12 +80,12 @@ void outputAverages(const Arguments args, std::vector<Process> processes) {
 		<< "-- number of processes: " << args.processCount
 		<< "\n-- number of CPU-bound processes: " << cpuBound
 		<< "\n-- number of I/O-bound processes: " << ioBound
-		<< "\n-- CPU-bound average CPU burst time: " << divideAndRound(cpuBoundCpuBurst, cpuBoundBurstCount) << " ms"
-		<< "\n-- I/O-bound average CPU burst time: " << divideAndRound(ioBoundCpuBurst, ioBoundBurstCount) << " ms"
-		<< "\n-- overall average CPU burst time: " <<  divideAndRound(cpuBoundCpuBurst + ioBoundCpuBurst, cpuBoundBurstCount + ioBoundBurstCount) << " ms"
-		<< "\n-- CPU-bound average I/O burst time: " << divideAndRound(cpuBoundIoBurst, cpuBoundBurstCount - cpuBound) << " ms"
-		<< "\n-- I/O-bound average I/O burst time: " << divideAndRound(ioBoundIoBurst, ioBoundBurstCount - ioBound) << " ms"
-		<< "\n-- overall average I/O burst time: " << divideAndRound(cpuBoundIoBurst + ioBoundIoBurst, cpuBoundBurstCount + ioBoundBurstCount - cpuBound - ioBound) << " ms"
+		<< "\n-- CPU-bound average CPU burst time: " << divideAndRound(cpuBoundSums.cpuBurstTime, cpuBoundBurstCount) << " ms"
+		<< "\n-- I/O-bound average CPU burst time: " << divideAndRound(ioBoundSums.cpuBurstTime, ioBoundBurstCount) << " ms"
+		<< "\n-- overall average CPU burst time: " <<  divideAndRound(cpuBoundSums.cpuBurstTime + ioBoundSums.cpuBurstTime, cpuBoundBurstCount + ioBoundBurstCount) << " ms"
+		<< "\n-- CPU-bound average I/O burst time: " << divideAndRound(cpuBoundSums.ioBurstTime, cpuBoundBurstCount - cpuBound) << " ms"
+		<< "\n-- I/O-bound average I/O burst time: " << divideAndRound(ioBoundSums.ioBurstTime, ioBoundBurstCount - ioBound) << " ms"
+		<< "\n-- overall average I/O burst time: " << divideAndRound(cpuBoundSums.ioBurstTime + ioBoundSums.ioBurstTime, cpuBoundBurstCount + ioBoundBurstCount - cpuBound - ioBound) << " ms"
 	;
   statsFile.close();
 }
