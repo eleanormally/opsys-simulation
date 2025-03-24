@@ -12,11 +12,13 @@ int Event::getOrder() const {
   switch (type) {
     case EventType::BurstDone:
       if (value.burst.isInCpuPhase) {
-        return 3;
+        return 4;
       } else {
         return 1;
       }
       break;
+    case EventType::BurstTimeout:
+      return 3;
     case EventType::ProcessSwitchIn:
       return 2;
       break;
