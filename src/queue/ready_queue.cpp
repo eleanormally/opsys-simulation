@@ -13,7 +13,7 @@ ReadyQueue* initReadyQueue(Arguments args, SchedulingAlgorithm algorithm) {
   return new ReadyQueue(args, algorithm);
 }
 std::ostream& operator<<(std::ostream& out, const ReadyQueue& r) {
-  out << "[Q" << (r).toString() << "]";
+  out << (r).toString();
   return out;
 }
 

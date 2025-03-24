@@ -71,3 +71,5 @@ class Process {
 };
 
 std::vector<Process> generateProcesses(const Arguments args);
+void outputAverages(const Arguments args, std::vector<Process> processes);
+double divideAndRound(double sum, size_t count);
