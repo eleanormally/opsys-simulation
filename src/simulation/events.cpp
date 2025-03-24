@@ -21,6 +21,7 @@ int Event::getOrder() const {
     case EventType::BurstTimeout:
       return 3;
     case EventType::ProcessSwitchIn:
+    case EventType::ProcessStart:
       return 2;
       break;
     case EventType::ProcessArrived:
