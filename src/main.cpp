@@ -17,6 +17,7 @@ int main(int argc, char** argv) {
             << "; t_slice=" << args.timeSlice << "ms\n";
   for (SchedulingAlgorithm algorithm : listSchedulingAlgorithms()) {
     Simulation(args, algorithm, processes).run();
+    std::cout << std::endl;
   }
   return EXIT_SUCCESS;
 }

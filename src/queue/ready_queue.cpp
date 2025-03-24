@@ -1,10 +1,9 @@
 #include "ready_queue.h"
 
 ReadyQueue* initReadyQueue(Arguments args, SchedulingAlgorithm algorithm) {
-  ReadyQueueFCFS* rq = new ReadyQueueFCFS(args, algorithm);
-  return rq;
   switch (algorithm) {
     case SchedulingAlgorithm::FirstComeFirstServe:
+      return new ReadyQueueFCFS(args, algorithm);
       break;
     case SchedulingAlgorithm::ShortestJobFirst:
       return new ReadyQueueSJF(args, algorithm);
@@ -52,16 +51,18 @@ std::string ReadyQueueFCFS::toString() const {
   return out;
 }
 std::string ReadyQueueSJF::toString() const {
+  if (readyQueue.size() == 0) {
+    return "[Q empty]";
+  }
   std::priority_queue<Process*, std::vector<Process*>, CompareSJF> queueCopy =
       readyQueue;
-  std::string allProcesses = "[Q ";
+  std::string allProcesses = "[Q";
 
   while (!queueCopy.empty()) {
     Process* p = (queueCopy.top());
-    allProcesses = allProcesses + (*p).getId().toString();
+    allProcesses += " " + p->getId().toString();
     queueCopy.pop();
   }
-  allProcesses = (allProcesses == "") ? "empty" : allProcesses;
   allProcesses += "]";
   return allProcesses;
 }
