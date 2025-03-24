@@ -222,7 +222,13 @@ void Simulation::handleIoBurst(const Event& e) {
   Time currentBurstDuration = globalTime - cpuBurstStartTime;
   Time predictedRemaining;
   if (inCPUBurst != nullptr) {
-    predictedRemaining = inCPUBurst->getTau() - currentBurstDuration;
+    predictedRemaining = inCPUBurst->getTau() - currentBurstDuration +
+                         inCPUBurst->getTimeRemaining() -
+                         inCPUBurst->getCurrentBurst().cpuBurstTime;
+    if (predictedRemaining > inCPUBurst->getTau()) {
+      //do not preempt for underflow
+      predictedRemaining = Time(0);
+    }
   }
   if (algorithm == SchedulingAlgorithm::ShortestRemainingTime &&
       predictedRemaining > b.process->getTau()) {
