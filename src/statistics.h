@@ -17,8 +17,10 @@ static double divideAndRound(Time sum, size_t count) {
 	}
 }
 
+void outputAlgorithm(std::ofstream &statsFile, SimulationStats stats, Time cpuBurstTime) {
+}
 
-static void outputAverages(const Arguments args, std::vector<Process> processes) {
+static void outputAverages(const Arguments args, std::vector<Process> processes, std::vector<SimulationStats> simulationStats) {
 	BurstTime cpuBoundSums;
 	BurstTime ioBoundSums;
 	size_t ioBoundBurstCount = 0;
@@ -57,7 +59,7 @@ static void outputAverages(const Arguments args, std::vector<Process> processes)
 		<< "\n-- I/O-bound average I/O burst time: " << divideAndRound(ioBoundSums.ioBurstTime, ioBoundBurstCount - ioBound) << " ms"
 		<< "\n-- overall average I/O burst time: " << divideAndRound(cpuBoundSums.ioBurstTime + ioBoundSums.ioBurstTime, cpuBoundBurstCount + ioBoundBurstCount - cpuBound - ioBound) << " ms"
 	;
+	outputAlgorithm(statsFile, simulationStats[0], cpuBoundSums.cpuBurstTime);
   statsFile.close();
 }
-
 

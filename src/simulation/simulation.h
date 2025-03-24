@@ -1,6 +1,9 @@
-#include <unordered_set>
+#pragma once
+
 #include "../arg_parser.h"
 #include "../queue/ready_queue.h"
+#include <unordered_set>
+#include <math.h>
 
 typedef struct BurstInstance {
   Process* process;
@@ -58,6 +61,16 @@ struct std::hash<Event> {
   }
 };
 
+typedef struct SimulationStats {
+  BurstTime preemptionCount;
+  BurstTime contextSwitchCount;
+  BurstTime turnaroundSum;
+  BurstTime turnaroundCount;
+  BurstTime waitSum;
+  BurstTime waitCount;
+  Time totalSimulationTime;
+} SimulationStats;
+
 class Simulation {
   Time globalTime;
   const Arguments& args;
@@ -69,6 +82,7 @@ class Simulation {
   Process* inCPUBurst;
   Time cpuBurstStartTime;
   Event burstDoneEvent;
+  SimulationStats stats;
 
   void log(std::string eventDetails) {
     std::cout << "time " << globalTime << ": " << eventDetails << " " << *queue
@@ -127,5 +141,5 @@ class Simulation {
     }
   }
   ~Simulation() { delete queue; }
-  void run();
+  SimulationStats run();
 };
