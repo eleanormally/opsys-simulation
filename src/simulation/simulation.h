@@ -1,3 +1,4 @@
+#include <unordered_set>
 #include "../arg_parser.h"
 #include "../queue/ready_queue.h"
 
@@ -13,6 +14,30 @@ enum class EventType {
   ProcessSwitchIn,
   ProcessStart,
 };
+template <>
+struct std::hash<EventType> {
+  bool operator()(const EventType& e) const {
+    int h = 0;
+    switch (e) {
+    case EventType::ProcessArrived:
+      h = 1;
+      break;
+    case EventType::BurstDone:
+      h = 2;
+      break;
+    case EventType::BurstTimeout:
+      h = 3;
+      break;
+    case EventType::ProcessSwitchIn:
+      h = 4;
+      break;
+    case EventType::ProcessStart:
+      h = 5;
+      break;
+    }
+  return std::hash<int>()(h);
+  }
+};
 typedef struct Event {
   EventType type;
   Time time;
@@ -21,9 +46,17 @@ typedef struct Event {
     BurstInstance burst;
   } value;
   bool operator<(const Event& e) const;
+  bool operator==(const Event& e) const;
   int getOrder() const;
   ID getId() const;
 } Event;
+template <>
+struct std::hash<Event> {
+  size_t operator()(const Event& e) const {
+    using std::hash;
+    return (hash<size_t>()(e.time.getUnderlying()) ^ (hash<EventType>()(e.type) << 1));
+  }
+};
 
 class Simulation {
   Time globalTime;
@@ -33,7 +66,9 @@ class Simulation {
   std::priority_queue<Event> events;
   ReadyQueue* queue;
   size_t nextProcessIdx;
-  bool inCPUBurst;
+  Process* inCPUBurst;
+  Time cpuBurstStartTime;
+  Event burstDoneEvent;
 
   void log(std::string eventDetails) {
     std::cout << "time " << globalTime << ": " << eventDetails << " " << *queue
@@ -41,7 +76,7 @@ class Simulation {
   }
   void log(const Process* const p, std::string eventDetails) {
     std::string tauString = "";
-    if (algorithm == SchedulingAlgorithm::ShortestJobFirst) {
+    if (algorithm == SchedulingAlgorithm::ShortestJobFirst || algorithm == SchedulingAlgorithm::ShortestRemainingTime) {
       tauString = " (tau " + p->getTau().toString() + ")";
     }
     std::cout << "time " << globalTime << ": " << p->toString() << tauString
@@ -52,9 +87,14 @@ class Simulation {
   void popProcess() { nextProcessIdx++; }
   bool hasNextProcess() { return nextProcessIdx < processes.size(); }
   void addProcess(Process* p);
-  void handleBurst(BurstInstance& b, bool timeout);
+  void handleCpuBurst(const Event& e);
+  void handleCpuTimeout(const Event& e);
+  void handleIoBurst(const Event& e);
   void selectProcess();
   void startProcess(Process* p);
+  
+  Event generateIoBurst(Process* p);
+  Event generateCpuBurst(Process* p);
 
   void addProcessToQueue(Process* p);
 
@@ -72,7 +112,7 @@ class Simulation {
         processes(_processes),
         queue(initReadyQueue(_args, _algorithm)),
         nextProcessIdx(0),
-        inCPUBurst(false) {
+        inCPUBurst(nullptr) {
     for (size_t i = 0; i < processes.size(); i++) {
       Process* p = &processes[i];
       Event e = {
