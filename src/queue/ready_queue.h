@@ -32,26 +32,24 @@ class ReadyQueue {
   size_t timeSlice;
 
  public:
+  virtual ~ReadyQueue() {}
   ReadyQueue(Arguments args, SchedulingAlgorithm algorithm);
   virtual bool isEmpty() const { return true; }
-  virtual void add(Process* p) {
-    std::cout << "ERROR: USING BASE READY QUEUE\n";
-  }
+  virtual void add(Process*) { std::cout << "ERROR: USING BASE READY QUEUE\n"; }
   virtual Process* pop() { return NULL; }
   virtual const Process* peek() { return NULL; }
   virtual std::string toString() const { return ""; }
   friend std::ostream& operator<<(std::ostream& out, const ReadyQueue& r);
 };
 
-ReadyQueue getQueue(Arguments args, SchedulingAlgorithm algorithm);
-
 class ReadyQueueFCFS : public ReadyQueue {
   std::queue<Process*> readyQueue;
 
  public:
+  ~ReadyQueueFCFS() {}
   ReadyQueueFCFS(Arguments args, SchedulingAlgorithm algorithm)
       : ReadyQueue(args, algorithm) {}
-  virtual bool isEmpty() const { return readyQueue.empty(); }
+  bool isEmpty() const { return readyQueue.empty(); }
   void add(Process* p) { readyQueue.push(p); }
   Process* pop() {
     Process* p = readyQueue.front();
@@ -67,9 +65,10 @@ class ReadyQueueSJF : public ReadyQueue {
   std::priority_queue<Process*, std::vector<Process*>, CompareSJF> readyQueue;
 
  public:
+  ~ReadyQueueSJF() {}
   ReadyQueueSJF(Arguments args, SchedulingAlgorithm algorithm)
       : ReadyQueue(args, algorithm) {}
-  virtual bool isEmpty() const { return readyQueue.empty(); }
+  bool isEmpty() const { return readyQueue.empty(); }
   void add(Process* p) { readyQueue.push(p); }
   Process* pop() {
     Process* p = readyQueue.top();

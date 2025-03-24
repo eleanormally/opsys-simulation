@@ -40,6 +40,7 @@ class Process {
   size_t burstIndex;
   Time tau;
   bool cpuBound;
+  Time timeRemainingInBurst;
   friend std::ostream& operator<<(std::ostream& out, const Process& p);
 
  public:
@@ -49,13 +50,18 @@ class Process {
         arrivalTime(_time),
         burstCount(_burstCount),
         burstTimes(_burstTimes),
+        burstIndex(0),
         tau(_tau),
-        cpuBound(_cpuBound) {}
+        cpuBound(_cpuBound),
+        timeRemainingInBurst(0) {}
   Time getArrivalTime() const { return arrivalTime; }
   ID getId() { return id; }
   bool isCpuBound() const { return cpuBound; }
   std::string toString() const { return "Process " + id.toString(); }
-  Time getTau() { return tau; }
+  Time getTau() const { return tau; }
+  void setTau(Time t) { tau = t; }
+  Time getTimeRemaining() const { return timeRemainingInBurst; }
+  void setTimeRemaining(Time t) { timeRemainingInBurst = t; }
   const BurstTime& getCurrentBurst() const { return burstTimes[burstIndex]; }
   void incrementBurst() { burstIndex++; }
   bool hasNextBurst() { return burstIndex < burstTimes.size(); }

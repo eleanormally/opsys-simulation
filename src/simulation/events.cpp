@@ -12,11 +12,13 @@ int Event::getOrder() const {
   switch (type) {
     case EventType::BurstDone:
       if (value.burst.isInCpuPhase) {
-        return 3;
+        return 4;
       } else {
         return 1;
       }
       break;
+    case EventType::BurstTimeout:
+      return 3;
     case EventType::ProcessSwitchIn:
       return 2;
       break;
@@ -26,13 +28,13 @@ int Event::getOrder() const {
 }
 
 bool Event::operator<(const Event& e) const {
+  if (time != e.time) {
+    return e.time < time;
+  }
   int thisOrder = getOrder();
   int eOrder = e.getOrder();
   if (thisOrder != eOrder) {
     return eOrder < thisOrder;
-  }
-  if (time != e.time) {
-    return e.time < time;
   }
   return e.getId() < getId();
 }

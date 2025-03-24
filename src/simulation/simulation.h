@@ -9,6 +9,7 @@ typedef struct BurstInstance {
 enum class EventType {
   ProcessArrived,
   BurstDone,
+  BurstTimeout,
   ProcessSwitchIn,
 };
 typedef struct Event {
@@ -38,16 +39,22 @@ class Simulation {
               << std::endl;
   }
   void log(const Process* const p, std::string eventDetails) {
-    std::cout << "time " << globalTime << ": " << p->toString() << " "
-              << eventDetails << " " << *queue << std::endl;
+    std::string tauString = "";
+    if (algorithm == SchedulingAlgorithm::ShortestJobFirst) {
+      tauString = " (tau " + p->getTau().toString() + ")";
+    }
+    std::cout << "time " << globalTime << ": " << p->toString() << tauString
+              << " " << eventDetails << " " << *queue << std::endl;
   }
 
   const Process& nextProcess() { return processes[nextProcessIdx]; }
   void popProcess() { nextProcessIdx++; }
   bool hasNextProcess() { return nextProcessIdx < processes.size(); }
   void addProcess(Process* p);
-  void handleBurst(BurstInstance& b);
+  void handleBurst(BurstInstance& b, bool timeout);
   void switchToNextProcess();
+
+  void addProcessToQueue(Process* p);
 
   Event popNextEvent();
   const Event& peekNextEvent();
@@ -56,7 +63,7 @@ class Simulation {
 
  public:
   Simulation(const Arguments& _args, SchedulingAlgorithm _algorithm,
-             const std::vector<Process>& _processes)
+             std::vector<Process> _processes)
       : globalTime(Time(0)),
         args(_args),
         algorithm(_algorithm),
@@ -64,13 +71,14 @@ class Simulation {
         queue(initReadyQueue(_args, _algorithm)),
         nextProcessIdx(0),
         inCPUBurst(false) {
-    for (Process& p : processes) {
+    for (size_t i = 0; i < processes.size(); i++) {
+      Process* p = &processes[i];
       Event e = {
           .type = EventType::ProcessArrived,
-          .time = p.getArrivalTime(),
+          .time = p->getArrivalTime(),
           .value =
               {
-                  .process = &p,
+                  .process = p,
               },
       };
       addEvent(e);
