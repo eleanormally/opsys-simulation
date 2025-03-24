@@ -15,7 +15,10 @@ void Simulation::run() {
         handleBurst(e.value.burst, e.type == EventType::BurstTimeout);
         break;
       case EventType::ProcessSwitchIn:
-        switchToNextProcess();
+        selectProcess();
+        break;
+      case EventType::ProcessStart:
+        startProcess(e.value.process);
     }
   }
   log("Simulator ended for " + toString(algorithm));
@@ -26,7 +29,12 @@ void Simulation::addProcess(Process* p) {
   p->setTimeRemaining(p->getCurrentBurst().cpuBurstTime);
   log(p, "arrived; added to ready queue");
   if (!inCPUBurst) {
-    switchToNextProcess();
+    Event e = {
+        .type = EventType::ProcessSwitchIn,
+        .time = globalTime,
+        .value = {},
+    };
+    addEvent(e);
   }
 }
 
@@ -34,23 +42,17 @@ void Simulation::addProcessToQueue(Process* p) {
   queue->add(p);
 }
 
-void Simulation::switchToNextProcess() {
-  if (queue->isEmpty() || inCPUBurst)
-    return;
-  Process* p = queue->pop();
-  globalTime += args.contextSwitchMillis;
+Event generateBurstEvent(Process* p, SchedulingAlgorithm algorithm,
+                         const Arguments& args, Time currentTime) {
   Time burstTime = p->getTimeRemaining();
-  log(p, "started using the CPU for " + burstTime.toString() + " burst");
-  inCPUBurst = true;
   bool doTimeout = false;
   if (algorithm == SchedulingAlgorithm::RoundRobin) {
     doTimeout = burstTime > args.timeSlice;
   }
-  Event e;
   if (doTimeout) {
-    e = {
+    return {
         .type = EventType::BurstTimeout,
-        .time = globalTime + args.timeSlice,
+        .time = currentTime + args.timeSlice,
         .value =
             {
                 .burst{
@@ -60,9 +62,9 @@ void Simulation::switchToNextProcess() {
             },
     };
   } else {
-    e = {
+    return {
         .type = EventType::BurstDone,
-        .time = burstTime + globalTime,
+        .time = burstTime + currentTime,
         .value =
             {
                 .burst{
@@ -72,6 +74,34 @@ void Simulation::switchToNextProcess() {
             },
     };
   }
+}
+
+void Simulation::selectProcess() {
+  if (queue->isEmpty() || inCPUBurst)
+    return;
+  Process* p = queue->pop();
+  inCPUBurst = true;
+  Event e = {
+      .type = EventType::ProcessStart,
+      .time = globalTime + args.contextSwitchMillis,
+      .value =
+          {
+              .process = p,
+          },
+  };
+  addEvent(e);
+}
+void Simulation::startProcess(Process* p) {
+  Time burstTime = p->getTimeRemaining();
+  Time totalBurstTime = p->getCurrentBurst().cpuBurstTime;
+  Event e = generateBurstEvent(p, algorithm, args, globalTime);
+  if (totalBurstTime != burstTime) {
+
+    log(p, "started using the CPU for remaining " + burstTime.toString() +
+               " of " + totalBurstTime.toString() + " burst");
+  } else {
+    log(p, "started using the CPU for " + burstTime.toString() + " burst");
+  }
   addEvent(e);
 }
 
@@ -80,9 +110,14 @@ void Simulation::handleBurst(BurstInstance& b, bool timeout) {
     std::string numBurstsRemaining =
         std::to_string((b.process->numRemainingBursts() - 1));
     inCPUBurst = false;
-    if (numBurstsRemaining == "0") {
+    if (numBurstsRemaining == "0" && !timeout) {
       log(b.process->toString() + " terminated");
-      globalTime += args.contextSwitchMillis;
+      Event e = {
+          .type = EventType::ProcessSwitchIn,
+          .time = globalTime + args.contextSwitchMillis,
+          .value = {},
+      };
+      addEvent(e);
       return;
     }
     std::string burstWord = "burst";
@@ -103,11 +138,19 @@ void Simulation::handleBurst(BurstInstance& b, bool timeout) {
     }
     if (timeout) {
       Time remaining = b.process->getTimeRemaining() - args.timeSlice;
-      log("Time slice expired; preempting process " +
-          b.process->getId().toString() + " with " + remaining.toString() +
-          " remaining");
       b.process->setTimeRemaining(remaining);
-      addProcessToQueue(b.process);
+      if (queue->isEmpty()) {
+        log("Time slice expired; no preemption because ready queue is empty");
+        inCPUBurst = true;
+        Event e = generateBurstEvent(b.process, algorithm, args, globalTime);
+        addEvent(e);
+        return;
+      } else {
+        log("Time slice expired; preempting process " +
+            b.process->getId().toString() + " with " + remaining.toString() +
+            " remaining");
+        addProcessToQueue(b.process);
+      }
     } else {
       log(b.process, "completed a CPU burst; " + numBurstsRemaining + " " +
                          burstWord + " to go");

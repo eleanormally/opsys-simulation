@@ -11,6 +11,7 @@ enum class EventType {
   BurstDone,
   BurstTimeout,
   ProcessSwitchIn,
+  ProcessStart,
 };
 typedef struct Event {
   EventType type;
@@ -52,7 +53,8 @@ class Simulation {
   bool hasNextProcess() { return nextProcessIdx < processes.size(); }
   void addProcess(Process* p);
   void handleBurst(BurstInstance& b, bool timeout);
-  void switchToNextProcess();
+  void selectProcess();
+  void startProcess(Process* p);
 
   void addProcessToQueue(Process* p);
 
