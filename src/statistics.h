@@ -8,9 +8,7 @@
 #include <fstream>
 #include <iomanip>
 
-static double divideAndRound(Time sum, Time count) {
-	return divideAndRound(sum, count.getUnderlying());
-} 
+
 
 static double divideAndRound(Time sum, size_t count) {
 	if (count == 0) {
@@ -20,6 +18,9 @@ static double divideAndRound(Time sum, size_t count) {
 		return std::ceil(average * 1000) / 1000; 
 	}
 }
+static double divideAndRound(Time sum, Time count) {
+	return divideAndRound(sum, count.getUnderlying());
+} 
 
 std::string getAlgorithmName(size_t algorithmNum) {
 	switch (algorithmNum) {
@@ -47,12 +48,12 @@ void outputAlgorithm(std::ofstream &statsFile, SimulationStats stats, Time cpuBu
 		<< "\n-- CPU-bound average turnaround time: " << divideAndRound(stats.turnaroundSum.cpuBurstTime, stats.turnaroundCount.cpuBurstTime) << " ms"
 		<< "\n-- I/O-bound average turnaround time: " << divideAndRound(stats.turnaroundSum.ioBurstTime, stats.turnaroundCount.ioBurstTime) << " ms"
 		<< "\n-- overall average turnaround time: " << divideAndRound(stats.turnaroundSum.cpuBurstTime + stats.turnaroundSum.ioBurstTime, stats.turnaroundCount.cpuBurstTime + stats.turnaroundCount.ioBurstTime) << " ms"
-		<< "\n-- CPU-bound number of context switches: " << stats.contextSwitchCount.cpuBurstTime
-		<< "\n-- I/O-bound number of context switches: " << stats.contextSwitchCount.ioBurstTime
-		<< "\n-- overall number of context switches: " << stats.contextSwitchCount.cpuBurstTime + stats.contextSwitchCount.ioBurstTime
-		<< "\n-- CPU-bound number of preemptions: " << stats.preemptionCount.cpuBurstTime
-		<< "\n-- I/O-bound number of preemptions: " << stats.preemptionCount.ioBurstTime
-		<< "\n-- overall number of preemptions: " << stats.preemptionCount.cpuBurstTime + stats.preemptionCount.ioBurstTime
+		<< "\n-- CPU-bound number of context switches: " << stats.contextSwitchCount.cpuBurstTime.getUnderlying()
+		<< "\n-- I/O-bound number of context switches: " << stats.contextSwitchCount.ioBurstTime.getUnderlying()
+		<< "\n-- overall number of context switches: " << stats.contextSwitchCount.cpuBurstTime.getUnderlying() + stats.contextSwitchCount.ioBurstTime.getUnderlying()
+		<< "\n-- CPU-bound number of preemptions: " << stats.preemptionCount.cpuBurstTime.getUnderlying()
+		<< "\n-- I/O-bound number of preemptions: " << stats.preemptionCount.ioBurstTime.getUnderlying()
+		<< "\n-- overall number of preemptions: " << stats.preemptionCount.cpuBurstTime.getUnderlying() + stats.preemptionCount.ioBurstTime.getUnderlying()
 	;
 }
 
