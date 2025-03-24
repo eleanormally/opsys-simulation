@@ -15,7 +15,10 @@ void Simulation::run() {
         handleBurst(e.value.burst, e.type == EventType::BurstTimeout);
         break;
       case EventType::ProcessSwitchIn:
-        switchToNextProcess();
+        selectProcess();
+        break;
+      case EventType::ProcessStart:
+        startProcess(e.value.process);
     }
   }
   log("Simulator ended for " + toString(algorithm));
@@ -26,9 +29,11 @@ void Simulation::addProcess(Process* p) {
   p->setTimeRemaining(p->getCurrentBurst().cpuBurstTime);
   log(p, "arrived; added to ready queue");
   if (!inCPUBurst) {
-    Event e = {.type = EventType::ProcessSwitchIn,
-               .time = globalTime + args.contextSwitchMillis,
-               .value = {}};
+    Event e = {
+        .type = EventType::ProcessSwitchIn,
+        .time = globalTime,
+        .value = {},
+    };
     addEvent(e);
   }
 }
@@ -71,10 +76,22 @@ Event generateBurstEvent(Process* p, SchedulingAlgorithm algorithm,
   }
 }
 
-void Simulation::switchToNextProcess() {
+void Simulation::selectProcess() {
   if (queue->isEmpty() || inCPUBurst)
     return;
   Process* p = queue->pop();
+  inCPUBurst = true;
+  Event e = {
+      .type = EventType::ProcessStart,
+      .time = globalTime + args.contextSwitchMillis,
+      .value =
+          {
+              .process = p,
+          },
+  };
+  addEvent(e);
+}
+void Simulation::startProcess(Process* p) {
   Time burstTime = p->getTimeRemaining();
   Time totalBurstTime = p->getCurrentBurst().cpuBurstTime;
   Event e = generateBurstEvent(p, algorithm, args, globalTime);
@@ -85,7 +102,6 @@ void Simulation::switchToNextProcess() {
   } else {
     log(p, "started using the CPU for " + burstTime.toString() + " burst");
   }
-  inCPUBurst = true;
   addEvent(e);
 }
 
@@ -98,7 +114,7 @@ void Simulation::handleBurst(BurstInstance& b, bool timeout) {
       log(b.process->toString() + " terminated");
       Event e = {
           .type = EventType::ProcessSwitchIn,
-          .time = globalTime + args.contextSwitchMillis * 2,
+          .time = globalTime + args.contextSwitchMillis,
           .value = {},
       };
       addEvent(e);
@@ -160,7 +176,7 @@ void Simulation::handleBurst(BurstInstance& b, bool timeout) {
 
     Event e = {
         .type = EventType::ProcessSwitchIn,
-        .time = globalTime + args.contextSwitchMillis * 2,
+        .time = globalTime + args.contextSwitchMillis,
         .value = {},
     };
     addEvent(e);
@@ -171,7 +187,7 @@ void Simulation::handleBurst(BurstInstance& b, bool timeout) {
     log(b.process, "completed I/O; added to ready queue");
     Event e = {
         .type = EventType::ProcessSwitchIn,
-        .time = globalTime + args.contextSwitchMillis,
+        .time = globalTime,
         .value = {},
     };
     addEvent(e);
