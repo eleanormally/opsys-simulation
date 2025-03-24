@@ -20,6 +20,12 @@ void Time::operator+=(const size_t increment) {
 void Time::operator+=(const Time& increment) {
   utime += increment.utime;
 }
+void Time::operator-=(const size_t increment) {
+  utime -= increment;
+}
+void Time::operator-=(const Time& increment) {
+  utime -= increment.utime;
+}
 void Time::operator*=(const size_t increment) {
   utime *= increment;
 }
@@ -28,6 +34,10 @@ void Time::operator*=(const Time& increment) {
 }
 Time operator+(Time l, const Time& r) {
   l += r;
+  return l;
+}
+Time operator-(Time l, const Time& r) {
+  l -= r;
   return l;
 }
 Time operator*(Time l, const size_t& r) {

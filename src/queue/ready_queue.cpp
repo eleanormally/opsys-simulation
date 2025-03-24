@@ -3,14 +3,12 @@
 ReadyQueue* initReadyQueue(Arguments args, SchedulingAlgorithm algorithm) {
   switch (algorithm) {
     case SchedulingAlgorithm::FirstComeFirstServe:
+    case SchedulingAlgorithm::RoundRobin:
       return new ReadyQueueFCFS(args, algorithm);
       break;
     case SchedulingAlgorithm::ShortestJobFirst:
-      return new ReadyQueueSJF(args, algorithm);
-      break;
     case SchedulingAlgorithm::ShortestRemainingTime:
-    case SchedulingAlgorithm::RoundRobin:
-      break;
+      return new ReadyQueueSJF(args, algorithm);
   }
   return new ReadyQueue(args, algorithm);
 }

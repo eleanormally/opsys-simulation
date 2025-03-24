@@ -14,10 +14,10 @@ int main(int argc, char** argv) {
   std::cout << "<<< PROJECT SIMULATIONS\n<<< -- t_cs="
             << args.contextSwitchMillis * 2 << "ms; alpha=" << std::fixed
             << std::setprecision(2) << args.burstTimeAlpha
-            << "; t_slice=" << args.timeSlice << "ms\n";
+            << "; t_slice=" << args.timeSlice << "ms";
   for (SchedulingAlgorithm algorithm : listSchedulingAlgorithms()) {
-    Simulation(args, algorithm, processes).run();
     std::cout << std::endl;
+    Simulation(args, algorithm, processes).run();
   }
   return EXIT_SUCCESS;
 }

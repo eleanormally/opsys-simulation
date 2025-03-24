@@ -9,6 +9,7 @@ typedef struct BurstInstance {
 enum class EventType {
   ProcessArrived,
   BurstDone,
+  BurstTimeout,
   ProcessSwitchIn,
 };
 typedef struct Event {
@@ -50,8 +51,10 @@ class Simulation {
   void popProcess() { nextProcessIdx++; }
   bool hasNextProcess() { return nextProcessIdx < processes.size(); }
   void addProcess(Process* p);
-  void handleBurst(BurstInstance& b);
+  void handleBurst(BurstInstance& b, bool timeout);
   void switchToNextProcess();
+
+  void addProcessToQueue(Process* p);
 
   Event popNextEvent();
   const Event& peekNextEvent();
