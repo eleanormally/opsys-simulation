@@ -1,6 +1,6 @@
 #include "simulation.h"
 
-void Simulation::run() {
+SimulationStats Simulation::run() {
   std::cout << "time " << globalTime << ": Simulator started for " << algorithm
             << " " << *queue << std::endl;
   while (hasNextEvent()) {
@@ -28,6 +28,8 @@ void Simulation::run() {
     }
   }
   log("Simulator ended for " + toString(algorithm));
+  stats.totalSimulationTime = globalTime;
+  return stats;
 }
 
 void Simulation::addProcess(Process* p) {
