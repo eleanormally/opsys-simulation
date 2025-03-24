@@ -24,6 +24,9 @@ class ID {
     }
     return _id[0] < i._id[0];
   }
+  bool operator==(const ID& i) const {
+    return _id[0] == i._id[0] && _id[1] == i._id[1];
+  }
 };
 
 typedef struct BurstTime {
@@ -67,6 +70,7 @@ class Process {
   bool hasNextBurst() { return burstIndex < burstTimes.size(); }
   std::vector<BurstTime> getAllBursts() const { return burstTimes; }
   size_t getBurstCount() const { return burstCount; }
+  size_t getBurstIndex() const { return burstIndex; }
   size_t numRemainingBursts() const { return burstCount - burstIndex; }
 };
 

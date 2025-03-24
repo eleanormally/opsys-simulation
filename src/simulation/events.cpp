@@ -58,3 +58,6 @@ bool Simulation::hasNextEvent() const {
 void Simulation::addEvent(Event& e) {
   events.push(e);
 }
+bool Event::operator==(const Event& e) const {
+  return time == e.time && type == e.type && getId() == e.getId();
+}

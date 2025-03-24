@@ -11,6 +11,7 @@ enum class SchedulingAlgorithm {
   ShortestRemainingTime,
   RoundRobin,
 };
+
 std::ostream& operator<<(std::ostream& out, const SchedulingAlgorithm& algo);
 std::array<SchedulingAlgorithm, 4> listSchedulingAlgorithms();
 inline const std::string toString(SchedulingAlgorithm a) {
