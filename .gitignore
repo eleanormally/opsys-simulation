@@ -2,3 +2,4 @@ build/***
 !build/Makefile
 !build/prepare.sh
 /.cache
+src/.cache
