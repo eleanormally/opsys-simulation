@@ -38,8 +38,12 @@ class Simulation {
               << std::endl;
   }
   void log(const Process* const p, std::string eventDetails) {
-    std::cout << "time " << globalTime << ": " << p->toString() << " "
-              << eventDetails << " " << *queue << std::endl;
+    std::string tauString = "";
+    if (algorithm == SchedulingAlgorithm::ShortestJobFirst) {
+      tauString = " (tau " + p->getTau().toString() + ")";
+    }
+    std::cout << "time " << globalTime << ": " << p->toString() << tauString
+              << " " << eventDetails << " " << *queue << std::endl;
   }
 
   const Process& nextProcess() { return processes[nextProcessIdx]; }

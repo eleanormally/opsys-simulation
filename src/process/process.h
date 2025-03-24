@@ -56,7 +56,8 @@ class Process {
   ID getId() { return id; }
   bool isCpuBound() const { return cpuBound; }
   std::string toString() const { return "Process " + id.toString(); }
-  Time getTau() { return tau; }
+  Time getTau() const { return tau; }
+  void setTau(Time t) { tau = t; }
   const BurstTime& getCurrentBurst() const { return burstTimes[burstIndex]; }
   void incrementBurst() { burstIndex++; }
   bool hasNextBurst() { return burstIndex < burstTimes.size(); }

@@ -56,7 +56,7 @@ void Simulation::handleBurst(BurstInstance& b) {
         std::to_string((b.process->numRemainingBursts() - 1));
     inCPUBurst = false;
     if (numBurstsRemaining == "0") {
-      log(b.process, "terminated");
+      log(b.process->toString() + " terminated");
       globalTime += args.contextSwitchMillis;
       return;
     }
@@ -66,6 +66,18 @@ void Simulation::handleBurst(BurstInstance& b) {
     }
     log(b.process, "completed a CPU burst; " + numBurstsRemaining + " " +
                        burstWord + " to go");
+    if (algorithm == SchedulingAlgorithm::ShortestJobFirst) {
+      double oldTau = (double)b.process->getTau().getUnderlying();
+      double cpuTime =
+          (double)b.process->getCurrentBurst().cpuBurstTime.getUnderlying();
+      double tauUnderlying =
+          (oldTau * (1 - args.burstTimeAlpha) + cpuTime * args.burstTimeAlpha);
+      Time newTau = Time(ceil(tauUnderlying));
+      log("Recalculated tau for process " + b.process->getId().toString() +
+          ": old tau " + b.process->getTau().toString() + " ==> new tau " +
+          newTau.toString());
+      b.process->setTau(newTau);
+    }
 
     //generate IO burst
     const BurstTime& ioBurst = b.process->getCurrentBurst();
