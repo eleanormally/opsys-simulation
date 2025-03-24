@@ -3,9 +3,10 @@
 ID Event::getId() const {
   if (type == EventType::ProcessArrived) {
     return value.process->getId();
-  } else {
+  } else if (type != EventType::ProcessSwitchIn) {
     return value.burst.process->getId();
   }
+  return ID('z', 'z');
 }
 int Event::getOrder() const {
 
