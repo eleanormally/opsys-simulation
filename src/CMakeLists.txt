@@ -21,4 +21,4 @@ add_executable(${executable}
 
 #preparing gcc
 set_target_properties(${executable} PROPERTIES CXX_STANDARD 11)
-set_target_properties(${executable} PROPERTIES COMPILE_FLAGS "-g -Wall -Wextra")
+set_target_properties(${executable} PROPERTIES COMPILE_FLAGS "-g -Wall -Wextra -Wpedantic -Werror")

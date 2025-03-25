@@ -1,4 +1,5 @@
 #include "time.h"
+#include <cmath>
 
 bool Time::operator<(const Time& t) const {
   return utime < t.utime;
@@ -45,7 +46,7 @@ Time operator*(Time l, const size_t& r) {
   return l;
 }
 Time operator*(Time l, const double& r) {
-  double out = ceil((double)l.utime * r);
+  double out = std::ceil((double)l.utime * r);
   l = (size_t)out;
   return l;
 }

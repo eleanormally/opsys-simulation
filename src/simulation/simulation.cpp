@@ -261,8 +261,6 @@ void Simulation::handleIoBurst(const Event& e) {
         Event::newQueue(inCPUBurst, globalTime + args.contextSwitchMillis));
     stats.preemptionCount =
         incrementBurstTime(stats.preemptionCount, inCPUBurst);
-    addEvent(
-        Event::newQueue(inCPUBurst, globalTime + args.contextSwitchMillis));
     inCPUBurst = nullptr;
     addEvent(Event::newSelect(globalTime + args.contextSwitchMillis));
   } else {
