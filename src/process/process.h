@@ -64,6 +64,9 @@ class Process {
   bool isCpuBound() const { return cpuBound; }
   std::string toString() const { return "Process " + id.toString(); }
   Time getTau() const { return tau; }
+  Time getPredictedTime() const {
+    return tau + timeRemainingInBurst - getCurrentBurst().cpuBurstTime;
+  }
   void setTau(Time t) { tau = t; }
   Time getTimeRemaining() const { return timeRemainingInBurst; }
   void setTimeRemaining(Time t) { timeRemainingInBurst = t; }

@@ -140,6 +140,7 @@ Event Simulation::generateIoBurst(Process* p) {
 }
 
 void Simulation::startProcess(Process* p) {
+  processRunning = true;
   Time burstTime = p->getTimeRemaining();
   Time totalBurstTime = p->getCurrentBurst().cpuBurstTime;
   Event e = generateCpuBurst(p);
@@ -152,8 +153,17 @@ void Simulation::startProcess(Process* p) {
   } else {
     log(p, "started using the CPU for " + burstTime.toString() + " burst");
   }
-  addEvent(e);
   stats.contextSwitchCount = incrementBurstTime(stats.contextSwitchCount, p);
+  if (algorithm == SchedulingAlgorithm::ShortestRemainingTime &&
+      queue->peek()->getPredictedTime() < p->getPredictedTime()) {
+    log(queue->peek(), "will preempt " + p->getId().toString());
+    processRunning = false;
+    inCPUBurst = nullptr;
+    addEvent(Event::newQueue(p, globalTime + args.contextSwitchMillis));
+    addEvent(Event::newSelect(globalTime + args.contextSwitchMillis));
+  } else {
+    addEvent(e);
+  }
 }
 
 void Simulation::handleCpuTimeout(const Event& e) {
@@ -164,6 +174,7 @@ void Simulation::handleCpuTimeout(const Event& e) {
   }
   Time remaining = b.process->getTimeRemaining() - args.timeSlice;
   inCPUBurst = nullptr;
+  processRunning = false;
   b.process->setTimeRemaining(remaining);
   if (queue->isEmpty()) {
     log("Time slice expired; no preemption because ready queue is empty");
@@ -192,6 +203,7 @@ void Simulation::handleCpuBurst(const Event& e) {
   std::string numBurstsRemaining =
       std::to_string((b.process->numRemainingBursts() - 1));
   inCPUBurst = nullptr;
+  processRunning = false;
   if (numBurstsRemaining == "0") {
     log(b.process->toString() + " terminated");
     addEvent(Event::newSelect(globalTime + args.contextSwitchMillis));
@@ -237,16 +249,15 @@ void Simulation::handleIoBurst(const Event& e) {
   Time currentBurstDuration = globalTime - cpuBurstStartTime;
   Time predictedRemaining;
   if (inCPUBurst != nullptr) {
-    predictedRemaining = inCPUBurst->getTau() - currentBurstDuration +
-                         inCPUBurst->getTimeRemaining() -
-                         inCPUBurst->getCurrentBurst().cpuBurstTime;
+    predictedRemaining = inCPUBurst->getPredictedTime() - currentBurstDuration;
+
     if (predictedRemaining > inCPUBurst->getTau()) {
       //do not preempt for underflow
       predictedRemaining = Time(0);
     }
   }
   if (algorithm == SchedulingAlgorithm::ShortestRemainingTime &&
-      predictedRemaining > b.process->getTau()) {
+      predictedRemaining > b.process->getTau() && processRunning) {
     log(b.process, "completed I/O; preempting " +
                        inCPUBurst->getId().toString() +
                        " (predicted remaining time " +
@@ -258,6 +269,7 @@ void Simulation::handleIoBurst(const Event& e) {
     stats.preemptionCount =
         incrementBurstTime(stats.preemptionCount, inCPUBurst);
     inCPUBurst = nullptr;
+    processRunning = false;
     addEvent(Event::newSelect(globalTime + args.contextSwitchMillis));
   } else {
     log(b.process, "completed I/O; added to ready queue");
