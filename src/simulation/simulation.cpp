@@ -241,18 +241,10 @@ void Simulation::handleIoBurst(const Event& e) {
                        predictedRemaining.toString() + ")");
     inCPUBurst->setTimeRemaining(inCPUBurst->getTimeRemaining() -
                                  currentBurstDuration);
-<<<<<<< HEAD
     addEvent(
         Event::newQueue(inCPUBurst, globalTime + args.contextSwitchMillis));
     stats.preemptionCount =
         incrementBurstTime(stats.preemptionCount, *inCPUBurst);
-=======
-    stats.preemptionCount =
-        incrementBurstTime(stats.preemptionCount, *inCPUBurst);
-
-    addEvent(
-        Event::newQueue(inCPUBurst, globalTime + args.contextSwitchMillis));
->>>>>>> 8b1b38cbfb0e07d4442d272801185c3c418f9eb2
     inCPUBurst = nullptr;
     addEvent(Event::newSelect(globalTime + args.contextSwitchMillis));
   } else {
