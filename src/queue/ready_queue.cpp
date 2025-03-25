@@ -59,6 +59,9 @@ std::string ReadyQueueSJF::toString() const {
   while (!queueCopy.empty()) {
     Process* p = (queueCopy.top());
     allProcesses += " " + p->getId().toString();
+    /*allProcesses += " " + (p->getTau() + p->getTimeRemaining() -*/
+    /*                       p->getCurrentBurst().cpuBurstTime)*/
+    /*                          .toString();*/
     queueCopy.pop();
   }
   allProcesses += "]";

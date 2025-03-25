@@ -42,8 +42,13 @@ Arguments::Arguments(int argc, char** argv) {
 }
 
 std::ostream& operator<<(std::ostream& out, const Arguments& args) {
+  std::string pluralCpuProcess = "";
+  if (args.processCountCPUBound != 1) {
+    pluralCpuProcess = "es";
+  }
   out << "<<< -- process set (n=" << args.processCount << ") with "
-      << args.processCountCPUBound << " CPU-bound process\n";
+      << args.processCountCPUBound
+      << " CPU-bound process" + pluralCpuProcess + "\n";
   out << "<<< -- seed=" << args.seed << "; lambda=" << std::fixed
       << args.distributionLambda << "; bound=" << args.randomNumberUpperBound
       << std::endl;

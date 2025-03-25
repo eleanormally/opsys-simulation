@@ -3,29 +3,41 @@
 ID Event::getId() const {
   if (type == EventType::ProcessArrived) {
     return value.process->getId();
-  } else if (type != EventType::ProcessSwitchIn) {
+  } else if (type != EventType::ProcessSelect) {
     return value.burst.process->getId();
   }
   return ID('z', 'z');
 }
-int Event::getOrder() const {
 
+/* ORDER
+ *            CPU Burst | Process Start | IO Burst | Process Arrival
+ * Process Enqueue | Timeout Burst                       Process Select
+ *
+ */
+int Event::getOrder() const {
   switch (type) {
     case EventType::BurstDone:
       if (value.burst.isInCpuPhase) {
-        return 4;
+        return 6;
       } else {
-        return 1;
+        return 3;
       }
       break;
     case EventType::BurstTimeout:
-      return 3;
-    case EventType::ProcessSwitchIn:
+      return 5;
+      break;
+    case EventType::ProcessSelect:
+      return 1;
+      break;
     case EventType::ProcessStart:
-      return 2;
+      return 4;
       break;
     case EventType::ProcessArrived:
-      return 0;
+      return 2;
+      break;
+    case EventType::ProcessEnqueue:
+      return 7;
+      break;
   }
 }
 
@@ -36,7 +48,7 @@ bool Event::operator<(const Event& e) const {
   int thisOrder = getOrder();
   int eOrder = e.getOrder();
   if (thisOrder != eOrder) {
-    return eOrder < thisOrder;
+    return thisOrder < eOrder;
   }
   return e.getId() < getId();
 }
@@ -55,7 +67,7 @@ bool Simulation::hasNextEvent() const {
   return !events.empty();
 }
 
-void Simulation::addEvent(Event& e) {
+void Simulation::addEvent(Event e) {
   events.push(e);
 }
 bool Event::operator==(const Event& e) const {
