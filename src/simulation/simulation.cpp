@@ -29,7 +29,11 @@ SimulationStats Simulation::run() {
       case EventType::BurstTimeout:
         handleCpuTimeout(e);
         break;
-      case EventType::ProcessSwitchIn:
+      case EventType::ProcessEnqueue:
+        /*log(e.value.process, "enqueueing");*/
+        addProcessToQueue(e.value.process);
+        break;
+      case EventType::ProcessSelect:
         selectProcess();
         break;
       case EventType::ProcessStart:
@@ -47,7 +51,7 @@ void Simulation::addProcess(Process* p) {
   log(p, "arrived; added to ready queue");
   if (inCPUBurst == nullptr) {
     Event e = {
-        .type = EventType::ProcessSwitchIn,
+        .type = EventType::ProcessSelect,
         .time = globalTime,
         .value = {},
     };
@@ -60,6 +64,7 @@ void Simulation::addProcessToQueue(Process* p) {
 }
 
 void Simulation::selectProcess() {
+  /*log("selecting");*/
   if (queue->isEmpty() || inCPUBurst)
     return;
   Process* p = queue->pop();
@@ -161,14 +166,9 @@ void Simulation::handleCpuTimeout(const Event& e) {
         b.process->getId().toString() + " with " + remaining.toString() +
         " remaining");
     stats.preemptionCount = incrementBurstTime(stats.preemptionCount, *b.process);
-    addProcessToQueue(b.process);
+    addEvent(Event::newQueue(b.process, globalTime + args.contextSwitchMillis));
   }
-  Event nextEvent = {
-      .type = EventType::ProcessSwitchIn,
-      .time = globalTime + args.contextSwitchMillis,
-      .value = {},
-  };
-  addEvent(nextEvent);
+  addEvent(Event::newSelect(globalTime + args.contextSwitchMillis));
 }
 
 void Simulation::handleCpuBurst(const Event& e) {
@@ -182,12 +182,7 @@ void Simulation::handleCpuBurst(const Event& e) {
   inCPUBurst = nullptr;
   if (numBurstsRemaining == "0") {
     log(b.process->toString() + " terminated");
-    Event nextEvent = {
-        .type = EventType::ProcessSwitchIn,
-        .time = globalTime + args.contextSwitchMillis,
-        .value = {},
-    };
-    addEvent(nextEvent);
+    addEvent(Event::newSelect(globalTime + args.contextSwitchMillis));
     return;
   }
   std::string burstWord = "burst";
@@ -218,12 +213,7 @@ void Simulation::handleCpuBurst(const Event& e) {
       " switching out of CPU; blocking on I/O until time " +
       nextEvent.time.toString());
   addEvent(nextEvent);
-  Event switchIn = {
-      .type = EventType::ProcessSwitchIn,
-      .time = globalTime + args.contextSwitchMillis,
-      .value = {},
-  };
-  addEvent(switchIn);
+  addEvent(Event::newSelect(globalTime + args.contextSwitchMillis));
 }
 
 void Simulation::handleIoBurst(const Event& e) {
@@ -252,21 +242,13 @@ void Simulation::handleIoBurst(const Event& e) {
     inCPUBurst->setTimeRemaining(inCPUBurst->getTimeRemaining() -
                                  currentBurstDuration);
     stats.preemptionCount = incrementBurstTime(stats.preemptionCount, *inCPUBurst);
-    addProcessToQueue(inCPUBurst);
+
+    addEvent(
+        Event::newQueue(inCPUBurst, globalTime + args.contextSwitchMillis));
     inCPUBurst = nullptr;
-    Event e = {
-        .type = EventType::ProcessSwitchIn,
-        .time = globalTime + args.contextSwitchMillis,
-        .value = {},
-    };
-    addEvent(e);
+    addEvent(Event::newSelect(globalTime + args.contextSwitchMillis));
   } else {
     log(b.process, "completed I/O; added to ready queue");
-    Event e = {
-        .type = EventType::ProcessSwitchIn,
-        .time = globalTime,
-        .value = {},
-    };
-    addEvent(e);
+    addEvent(Event::newSelect(globalTime));
   }
 }

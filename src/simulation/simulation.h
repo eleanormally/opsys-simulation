@@ -14,31 +14,35 @@ enum class EventType {
   ProcessArrived,
   BurstDone,
   BurstTimeout,
-  ProcessSwitchIn,
+  ProcessSelect,
   ProcessStart,
+  ProcessEnqueue,
 };
 template <>
 struct std::hash<EventType> {
   bool operator()(const EventType& e) const {
     int h = 0;
     switch (e) {
-    case EventType::ProcessArrived:
-      h = 1;
-      break;
-    case EventType::BurstDone:
-      h = 2;
-      break;
-    case EventType::BurstTimeout:
-      h = 3;
-      break;
-    case EventType::ProcessSwitchIn:
-      h = 4;
-      break;
-    case EventType::ProcessStart:
-      h = 5;
-      break;
+      case EventType::ProcessArrived:
+        h = 1;
+        break;
+      case EventType::BurstDone:
+        h = 2;
+        break;
+      case EventType::BurstTimeout:
+        h = 3;
+        break;
+      case EventType::ProcessSelect:
+        h = 4;
+        break;
+      case EventType::ProcessStart:
+        h = 5;
+        break;
+      case EventType::ProcessEnqueue:
+        h = 6;
+        break;
     }
-  return std::hash<int>()(h);
+    return std::hash<int>()(h);
   }
 };
 typedef struct Event {
@@ -52,12 +56,31 @@ typedef struct Event {
   bool operator==(const Event& e) const;
   int getOrder() const;
   ID getId() const;
+  static Event newSelect(Time t) {
+    return Event{
+        .type = EventType::ProcessSelect,
+        .time = t,
+        .value = {},
+    };
+  }
+  static Event newQueue(Process* p, Time t) {
+    return Event{
+        .type = EventType::ProcessEnqueue,
+        .time = t,
+        .value =
+            {
+                .process = p,
+            },
+    };
+  }
+
 } Event;
 template <>
 struct std::hash<Event> {
   size_t operator()(const Event& e) const {
     using std::hash;
-    return (hash<size_t>()(e.time.getUnderlying()) ^ (hash<EventType>()(e.type) << 1));
+    return (hash<size_t>()(e.time.getUnderlying()) ^
+            (hash<EventType>()(e.type) << 1));
   }
 };
 
@@ -90,7 +113,8 @@ class Simulation {
   }
   void log(const Process* const p, std::string eventDetails) {
     std::string tauString = "";
-    if (algorithm == SchedulingAlgorithm::ShortestJobFirst || algorithm == SchedulingAlgorithm::ShortestRemainingTime) {
+    if (algorithm == SchedulingAlgorithm::ShortestJobFirst ||
+        algorithm == SchedulingAlgorithm::ShortestRemainingTime) {
       tauString = " (tau " + p->getTau().toString() + ")";
     }
     std::cout << "time " << globalTime << ": " << p->toString() << tauString
@@ -106,7 +130,7 @@ class Simulation {
   void handleIoBurst(const Event& e);
   void selectProcess();
   void startProcess(Process* p);
-  
+
   Event generateIoBurst(Process* p);
   Event generateCpuBurst(Process* p);
 
@@ -115,7 +139,7 @@ class Simulation {
   Event popNextEvent();
   const Event& peekNextEvent();
   bool hasNextEvent() const;
-  void addEvent(Event& e);
+  void addEvent(Event e);
 
  public:
   Simulation(const Arguments& _args, SchedulingAlgorithm _algorithm,
