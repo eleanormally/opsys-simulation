@@ -6,15 +6,15 @@ Arguments::Arguments(int argc, char** argv) {
     throw std::runtime_error("Incorrect number of arguments given.");
   }
   processCount = std::atoi(argv[1]);
-  if (processCount == 0) {
+  if (processCount == 0 && argv[1][0] != '0') {
     throw std::runtime_error("Cannot parse given process count.");
   }
   processCountCPUBound = std::atoi(argv[2]);
-  if (processCountCPUBound == 0) {
+  if (processCountCPUBound == 0 && argv[2][0] != '0') {
     throw std::runtime_error("Cannot parse given CPU-bound process count.");
   }
   seed = std::atoi(argv[3]);
-  if (seed == 0) {
+  if (seed == 0 && argv[3][0] != '0') {
     throw std::runtime_error(
         "Cannot parse given pseudo-random generator seed.");
   }
@@ -23,20 +23,20 @@ Arguments::Arguments(int argc, char** argv) {
     throw std::runtime_error("Cannot parse given distribution lambda.");
   }
   randomNumberUpperBound = std::atoi(argv[5]);
-  if (randomNumberUpperBound == 0) {
+  if (randomNumberUpperBound == 0 && argv[5][0] != '0') {
     throw std::runtime_error("Cannot parse given random number upper bound.");
   }
   contextSwitchMillis = std::atoi(argv[6]);
   contextSwitchMillis /= 2;
-  if (contextSwitchMillis == 0) {
+  if (contextSwitchMillis == 0 && argv[6][0] != '0') {
     throw std::runtime_error("Cannot parse given context switching time.");
   }
   burstTimeAlpha = std::atof(argv[7]);
-  if (burstTimeAlpha == 0.0) {
+  if (burstTimeAlpha == 0.0 && argv[7][0] != '0') {
     throw std::runtime_error("Cannot parse given burst time alpha value.");
   }
   timeSlice = std::atoi(argv[8]);
-  if (timeSlice == 0) {
+  if (timeSlice == 0 && argv[8][0] != '0') {
     throw std::runtime_error("Cannot parse given time slice.");
   }
 }

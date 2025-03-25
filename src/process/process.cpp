@@ -1,7 +1,6 @@
 #include "process.h"
 
 std::ostream& operator<<(std::ostream& out, const Process& p) {
-  //TODO
   std::string cpuOrIo = (p.isCpuBound()) ? "CPU" : "I/O";
   std::string burstPlural = "";
   if (p.getBurstCount() != 1) {
