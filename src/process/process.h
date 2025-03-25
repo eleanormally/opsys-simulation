@@ -55,8 +55,9 @@ class Process {
         burstTimes(_burstTimes),
         burstIndex(0),
         tau(_tau),
-        cpuBound(_cpuBound),
-        timeRemainingInBurst(0) {}
+        cpuBound(_cpuBound) {
+    timeRemainingInBurst = _burstTimes[0].cpuBurstTime;
+  }
   Time getArrivalTime() const { return arrivalTime; }
   ID getId() { return id; }
   bool isCpuBound() const { return cpuBound; }
