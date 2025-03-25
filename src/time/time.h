@@ -13,6 +13,8 @@ class Time {
   bool isNull() const;
   bool operator<(const Time& t) const;
   bool operator>(const Time& t) const;
+  bool operator>=(const Time& t) const;
+  bool operator<=(const Time& t) const;
   bool operator==(const Time& t) const;
   bool operator!=(const Time& t) const;
   void operator+=(const size_t);

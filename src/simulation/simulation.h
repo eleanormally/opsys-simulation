@@ -1,9 +1,10 @@
 #pragma once
 
 #include <math.h>
-#include <unordered_set>
 #include "../arg_parser.h"
 #include "../queue/ready_queue.h"
+
+#define TRUNCATE_OUTPUT
 
 typedef struct BurstInstance {
   Process* process;
@@ -109,10 +110,24 @@ class Simulation {
   SimulationStats stats;
 
   void log(std::string eventDetails) {
+#ifdef TRUNCATE_OUTPUT
+    if (globalTime >= Time(10000) &&
+        !(eventDetails.find("Simulator ended") != std::string::npos ||
+          eventDetails.find("terminated") != std::string::npos)) {
+      return;
+    }
+#endif
     std::cout << "time " << globalTime << ": " << eventDetails << " " << *queue
               << std::endl;
   }
   void log(const Process* const p, std::string eventDetails) {
+#ifdef TRUNCATE_OUTPUT
+    if (globalTime >= Time(10000) &&
+        !(eventDetails.find("Simulator ended") != std::string::npos ||
+          eventDetails.find("terminated") != std::string::npos)) {
+      return;
+    }
+#endif
     std::string tauString = "";
     if (algorithm == SchedulingAlgorithm::ShortestJobFirst ||
         algorithm == SchedulingAlgorithm::ShortestRemainingTime) {
