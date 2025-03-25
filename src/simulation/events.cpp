@@ -6,7 +6,7 @@ ID Event::getId() const {
   } else if (type != EventType::ProcessSelect) {
     return value.burst.process->getId();
   }
-  return ID('z', 'z');
+  return ID('Z', 'Z');
 }
 
 /* ORDER
@@ -68,6 +68,12 @@ bool Simulation::hasNextEvent() const {
 }
 
 void Simulation::addEvent(Event e) {
+  if (e.type == EventType::ProcessSelect) {
+    if (selectionStarted) {
+      return;
+    }
+    selectionStarted = true;
+  }
   events.push(e);
 }
 bool Event::operator==(const Event& e) const {

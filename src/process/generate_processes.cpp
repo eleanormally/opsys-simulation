@@ -1,6 +1,6 @@
-#include <math.h>
 #include "../random/random.h"
 #include "process.h"
+#include <math.h>
 
 ID intToID(int x) {
   return ID(65 + (x / 10), 48 + (x % 10));

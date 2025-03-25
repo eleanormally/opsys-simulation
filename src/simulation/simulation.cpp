@@ -1,6 +1,15 @@
 #include "simulation.h"
 
-void Simulation::run() {
+BurstTime incrementBurstTime(BurstTime burstTime, Process p) {
+  if (p.isCpuBound()) {
+    burstTime.cpuBurstTime += (size_t)1;
+  } else {
+    burstTime.ioBurstTime += (size_t)1;
+  }
+  return burstTime;
+}
+
+SimulationStats Simulation::run() {
   std::cout << "time " << globalTime << ": Simulator started for " << algorithm
             << " " << *queue << std::endl;
   while (hasNextEvent()) {
@@ -21,7 +30,6 @@ void Simulation::run() {
         handleCpuTimeout(e);
         break;
       case EventType::ProcessEnqueue:
-        /*log(e.value.process, "enqueueing");*/
         addProcessToQueue(e.value.process);
         break;
       case EventType::ProcessSelect:
@@ -32,6 +40,8 @@ void Simulation::run() {
     }
   }
   log("Simulator ended for " + toString(algorithm));
+  stats.totalSimulationTime = globalTime;
+  return stats;
 }
 
 void Simulation::addProcess(Process* p) {
@@ -53,7 +63,7 @@ void Simulation::addProcessToQueue(Process* p) {
 }
 
 void Simulation::selectProcess() {
-  /*log("selecting");*/
+  selectionStarted = false;
   if (queue->isEmpty() || inCPUBurst)
     return;
   Process* p = queue->pop();
@@ -131,6 +141,7 @@ void Simulation::startProcess(Process* p) {
     log(p, "started using the CPU for " + burstTime.toString() + " burst");
   }
   addEvent(e);
+  stats.contextSwitchCount = incrementBurstTime(stats.contextSwitchCount, *p);
 }
 
 void Simulation::handleCpuTimeout(const Event& e) {
@@ -154,6 +165,8 @@ void Simulation::handleCpuTimeout(const Event& e) {
         b.process->getId().toString() + " with " + remaining.toString() +
         " remaining");
     addEvent(Event::newQueue(b.process, globalTime + args.contextSwitchMillis));
+    stats.preemptionCount =
+        incrementBurstTime(stats.preemptionCount, *b.process);
   }
   addEvent(Event::newSelect(globalTime + args.contextSwitchMillis));
 }
@@ -228,8 +241,18 @@ void Simulation::handleIoBurst(const Event& e) {
                        predictedRemaining.toString() + ")");
     inCPUBurst->setTimeRemaining(inCPUBurst->getTimeRemaining() -
                                  currentBurstDuration);
+<<<<<<< HEAD
     addEvent(
         Event::newQueue(inCPUBurst, globalTime + args.contextSwitchMillis));
+    stats.preemptionCount =
+        incrementBurstTime(stats.preemptionCount, *inCPUBurst);
+=======
+    stats.preemptionCount =
+        incrementBurstTime(stats.preemptionCount, *inCPUBurst);
+
+    addEvent(
+        Event::newQueue(inCPUBurst, globalTime + args.contextSwitchMillis));
+>>>>>>> 8b1b38cbfb0e07d4442d272801185c3c418f9eb2
     inCPUBurst = nullptr;
     addEvent(Event::newSelect(globalTime + args.contextSwitchMillis));
   } else {

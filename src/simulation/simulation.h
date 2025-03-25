@@ -1,3 +1,6 @@
+#pragma once
+
+#include <math.h>
 #include <unordered_set>
 #include "../arg_parser.h"
 #include "../queue/ready_queue.h"
@@ -81,6 +84,16 @@ struct std::hash<Event> {
   }
 };
 
+typedef struct SimulationStats {
+  BurstTime preemptionCount;
+  BurstTime contextSwitchCount;
+  BurstTime turnaroundSum;
+  BurstTime turnaroundCount;
+  BurstTime waitSum;
+  BurstTime waitCount;
+  Time totalSimulationTime;
+} SimulationStats;
+
 class Simulation {
   Time globalTime;
   const Arguments& args;
@@ -92,6 +105,8 @@ class Simulation {
   Process* inCPUBurst;
   Time cpuBurstStartTime;
   Event burstDoneEvent;
+  bool selectionStarted;
+  SimulationStats stats;
 
   void log(std::string eventDetails) {
     std::cout << "time " << globalTime << ": " << eventDetails << " " << *queue
@@ -136,7 +151,8 @@ class Simulation {
         processes(_processes),
         queue(initReadyQueue(_args, _algorithm)),
         nextProcessIdx(0),
-        inCPUBurst(nullptr) {
+        inCPUBurst(nullptr),
+        selectionStarted(false) {
     for (size_t i = 0; i < processes.size(); i++) {
       Process* p = &processes[i];
       Event e = {
@@ -151,5 +167,5 @@ class Simulation {
     }
   }
   ~Simulation() { delete queue; }
-  void run();
+  SimulationStats run();
 };
