@@ -25,6 +25,7 @@ inline const std::string toString(SchedulingAlgorithm a) {
     case SchedulingAlgorithm::ShortestRemainingTime:
       return "SRT";
   }
+  return "";  //static analysis fix. never runs
 }
 
 class ReadyQueue {

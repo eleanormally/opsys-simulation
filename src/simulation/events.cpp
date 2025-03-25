@@ -39,6 +39,7 @@ int Event::getOrder() const {
       return 7;
       break;
   }
+  return 1000;  //THIS NEVER ACTUALLY HAPPENS GCC JUST CANT STATICALLY ANALYZE
 }
 
 bool Event::operator<(const Event& e) const {

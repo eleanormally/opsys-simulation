@@ -105,6 +105,7 @@ class Simulation {
   Time cpuBurstStartTime;
   Event burstDoneEvent;
   bool selectionStarted;
+  bool processRunning;
   SimulationStats stats;
 
   void log(std::string eventDetails) {
@@ -153,7 +154,8 @@ class Simulation {
         queue(initReadyQueue(_args, _algorithm)),
         nextProcessIdx(0),
         inCPUBurst(nullptr),
-        selectionStarted(false) {
+        selectionStarted(false),
+        processRunning(false) {
     for (size_t i = 0; i < processes.size(); i++) {
       Process* p = &processes[i];
       Event e = {
