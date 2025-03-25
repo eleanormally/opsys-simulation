@@ -165,6 +165,7 @@ void Simulation::handleCpuTimeout(const Event& e) {
   Time remaining = b.process->getTimeRemaining() - args.timeSlice;
   inCPUBurst = nullptr;
   b.process->setTimeRemaining(remaining);
+  b.process->setFirstSlice(false);
   if (queue->isEmpty()) {
     log("Time slice expired; no preemption because ready queue is empty");
     inCPUBurst = b.process;
@@ -192,6 +193,9 @@ void Simulation::handleCpuBurst(const Event& e) {
   std::string numBurstsRemaining =
       std::to_string((b.process->numRemainingBursts() - 1));
   inCPUBurst = nullptr;
+  if (b.process->isFirstSlice()) {
+    stats.roundRobinSliceCount = incrementBurstTime(stats.roundRobinSliceCount, b.process);
+  }
   if (numBurstsRemaining == "0") {
     log(b.process->toString() + " terminated");
     addEvent(Event::newSelect(globalTime + args.contextSwitchMillis));

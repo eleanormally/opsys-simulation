@@ -38,6 +38,8 @@ std::string getAlgorithmName(size_t algorithmNum) {
 }
 
 static void outputAverages(const Arguments args, std::vector<Process> processes, std::vector<SimulationStats> simulationStats) {
+	size_t contextSwitch = 2*args.contextSwitchMillis;
+	size_t hundred = 100;
 	BurstTime cpuBoundSums;
 	BurstTime ioBoundSums;
 	BurstTime burstCounts;
@@ -77,8 +79,6 @@ static void outputAverages(const Arguments args, std::vector<Process> processes,
 		<< "\n-- overall average I/O burst time: " << divideAndRound(cpuBoundSums.ioBurstTime + ioBoundSums.ioBurstTime, burstCounts.cpuBurstTime + burstCounts.ioBurstTime - cpuBound - ioBound) << " ms"
 	;
 
-	size_t contextSwitch = 2*args.contextSwitchMillis;
-	
 	for (size_t i = 0; i < 4; i++) {
 		// Calculate turnaround as (# cpu bursts + # preemptions) * (context switch time) + wait time + burst time
 		BurstTime turnaroundSums;
@@ -86,7 +86,7 @@ static void outputAverages(const Arguments args, std::vector<Process> processes,
 		turnaroundSums.ioBurstTime = simulationStats[i].waitSum.ioBurstTime + (burstCounts.ioBurstTime + simulationStats[i].preemptionCount.ioBurstTime)*contextSwitch + ioBoundSums.cpuBurstTime;
 
 		statsFile << "\n\nAlgorithm " << simulationStats[i].algorithmString
-			<< "\n-- CPU utilization: " << divideAndRound((totalCpuUse*((size_t)100)), simulationStats[i].totalSimulationTime.getUnderlying()) << "%"
+			<< "\n-- CPU utilization: " << divideAndRound(totalCpuUse*hundred, simulationStats[i].totalSimulationTime.getUnderlying()) << "%"
 			<< "\n-- CPU-bound average wait time: " << divideAndRound(simulationStats[i].waitSum.cpuBurstTime, burstCounts.cpuBurstTime) << " ms"
 			<< "\n-- I/O-bound average wait time: " << divideAndRound(simulationStats[i].waitSum.ioBurstTime, burstCounts.ioBurstTime) << " ms"
 			<< "\n-- overall average wait time: " << divideAndRound(simulationStats[i].waitSum.cpuBurstTime + simulationStats[i].waitSum.ioBurstTime, burstCounts.cpuBurstTime + burstCounts.ioBurstTime) << " ms"
@@ -100,6 +100,15 @@ static void outputAverages(const Arguments args, std::vector<Process> processes,
 			<< "\n-- I/O-bound number of preemptions: " << simulationStats[i].preemptionCount.ioBurstTime.getUnderlying()
 			<< "\n-- overall number of preemptions: " << simulationStats[i].preemptionCount.cpuBurstTime.getUnderlying() + simulationStats[i].preemptionCount.ioBurstTime.getUnderlying()
 		;
+
+		if (simulationStats[i].algorithmString == toString(SchedulingAlgorithm::RoundRobin)) {
+			statsFile
+			<< "\n-- CPU-bound percentage of CPU bursts completed within one time slice: " << divideAndRound(simulationStats[i].roundRobinSliceCount.cpuBurstTime*hundred, burstCounts.cpuBurstTime) << "%"
+			<< "\n-- I/O-bound percentage of CPU bursts completed within one time slice: " << divideAndRound(simulationStats[i].roundRobinSliceCount.ioBurstTime*hundred, burstCounts.ioBurstTime) << "%"
+			<< "\n-- overall percentage of CPU bursts completed within one time slice: " << divideAndRound(simulationStats[i].roundRobinSliceCount.cpuBurstTime*hundred + simulationStats[i].roundRobinSliceCount.ioBurstTime*hundred, burstCounts.cpuBurstTime + burstCounts.ioBurstTime) << "%"
+			;
+		}
+
 	}
   statsFile.close();
 }
