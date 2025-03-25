@@ -21,7 +21,6 @@ void Simulation::run() {
         handleCpuTimeout(e);
         break;
       case EventType::ProcessEnqueue:
-        /*log(e.value.process, "enqueueing");*/
         addProcessToQueue(e.value.process);
         break;
       case EventType::ProcessSelect:
@@ -53,7 +52,7 @@ void Simulation::addProcessToQueue(Process* p) {
 }
 
 void Simulation::selectProcess() {
-  /*log("selecting");*/
+  selectionStarted = false;
   if (queue->isEmpty() || inCPUBurst)
     return;
   Process* p = queue->pop();
