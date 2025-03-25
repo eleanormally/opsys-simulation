@@ -161,6 +161,7 @@ void Simulation::startProcess(Process* p) {
     inCPUBurst = nullptr;
     addEvent(Event::newQueue(p, globalTime + args.contextSwitchMillis));
     addEvent(Event::newSelect(globalTime + args.contextSwitchMillis));
+    stats.preemptionCount = incrementBurstTime(stats.preemptionCount, p);
   } else {
     addEvent(e);
   }
