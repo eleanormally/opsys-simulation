@@ -13,7 +13,7 @@ ReadyQueue* initReadyQueue(Arguments args, SchedulingAlgorithm algorithm) {
   return new ReadyQueue(args, algorithm);
 }
 std::ostream& operator<<(std::ostream& out, const ReadyQueue& r) {
-  out << r.toString();
+  out << (r).toString();
   return out;
 }
 
@@ -35,6 +35,7 @@ ReadyQueue::ReadyQueue(Arguments args, SchedulingAlgorithm algorithm) {
   algorithmType = algorithm;
   timeSlice = args.timeSlice;
 }
+
 std::string ReadyQueueFCFS::toString() const {
   if (readyQueue.size() == 0) {
     return "[Q empty]";

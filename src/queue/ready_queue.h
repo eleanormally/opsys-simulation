@@ -50,7 +50,7 @@ class ReadyQueueFCFS : public ReadyQueue {
   ~ReadyQueueFCFS() {}
   ReadyQueueFCFS(Arguments args, SchedulingAlgorithm algorithm)
       : ReadyQueue(args, algorithm) {}
-  bool isEmpty() const { return readyQueue.size() == 0; }
+  bool isEmpty() const { return readyQueue.empty(); }
   void add(Process* p) { readyQueue.push(p); }
   Process* pop() {
     Process* p = readyQueue.front();
@@ -69,7 +69,7 @@ class ReadyQueueSJF : public ReadyQueue {
   ~ReadyQueueSJF() {}
   ReadyQueueSJF(Arguments args, SchedulingAlgorithm algorithm)
       : ReadyQueue(args, algorithm) {}
-  bool isEmpty() const { return readyQueue.size() == 0; }
+  bool isEmpty() const { return readyQueue.empty(); }
   void add(Process* p) { readyQueue.push(p); }
   Process* pop() {
     Process* p = readyQueue.top();
