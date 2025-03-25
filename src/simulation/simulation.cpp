@@ -1,5 +1,14 @@
 #include "simulation.h"
 
+BurstTime incrementBurstTime(BurstTime burstTime, Process p) {
+  if (p.isCpuBound()) {
+    burstTime.cpuBurstTime += (size_t)1;
+  } else {
+    burstTime.ioBurstTime += (size_t)1;
+  }
+  return burstTime;
+}
+
 SimulationStats Simulation::run() {
   std::cout << "time " << globalTime << ": Simulator started for " << algorithm
             << " " << *queue << std::endl;
@@ -128,6 +137,7 @@ void Simulation::startProcess(Process* p) {
     log(p, "started using the CPU for " + burstTime.toString() + " burst");
   }
   addEvent(e);
+  stats.contextSwitchCount = incrementBurstTime(stats.contextSwitchCount, *p);
 }
 
 void Simulation::handleCpuTimeout(const Event& e) {
@@ -150,6 +160,7 @@ void Simulation::handleCpuTimeout(const Event& e) {
     log("Time slice expired; preempting process " +
         b.process->getId().toString() + " with " + remaining.toString() +
         " remaining");
+    stats.preemptionCount = incrementBurstTime(stats.preemptionCount, *b.process);
     addProcessToQueue(b.process);
   }
   Event nextEvent = {
@@ -240,6 +251,7 @@ void Simulation::handleIoBurst(const Event& e) {
                        predictedRemaining.toString() + ")");
     inCPUBurst->setTimeRemaining(inCPUBurst->getTimeRemaining() -
                                  currentBurstDuration);
+    stats.preemptionCount = incrementBurstTime(stats.preemptionCount, *inCPUBurst);
     addProcessToQueue(inCPUBurst);
     inCPUBurst = nullptr;
     Event e = {
