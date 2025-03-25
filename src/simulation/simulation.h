@@ -88,6 +88,7 @@ typedef struct SimulationStats {
   BurstTime preemptionCount;
   BurstTime contextSwitchCount;
   BurstTime waitSum;
+  BurstTime roundRobinSliceCount;
   Time totalSimulationTime;
   std::string algorithmString;
 } SimulationStats;

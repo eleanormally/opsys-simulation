@@ -45,6 +45,7 @@ class Process {
   bool cpuBound;
   Time timeRemainingInBurst;
   Time lastAddedToQueue;
+  bool firstSlice;
   friend std::ostream& operator<<(std::ostream& out, const Process& p);
 
  public:
@@ -56,7 +57,8 @@ class Process {
         burstTimes(_burstTimes),
         burstIndex(0),
         tau(_tau),
-        cpuBound(_cpuBound) {
+        cpuBound(_cpuBound),
+        firstSlice(true) {
     timeRemainingInBurst = _burstTimes[0].cpuBurstTime;
   }
   Time getArrivalTime() const { return arrivalTime; }
@@ -73,12 +75,14 @@ class Process {
   Time getLastAddedToQueueTime() { return lastAddedToQueue; }
   void setLastAddedToQueueTime(Time t) { lastAddedToQueue = t; }
   const BurstTime& getCurrentBurst() const { return burstTimes[burstIndex]; }
-  void incrementBurst() { burstIndex++; }
+  void incrementBurst() { burstIndex++; firstSlice = true; }
   bool hasNextBurst() { return burstIndex < burstTimes.size(); }
   std::vector<BurstTime> getAllBursts() const { return burstTimes; }
   size_t getBurstCount() const { return burstCount; }
   size_t getBurstIndex() const { return burstIndex; }
   size_t numRemainingBursts() const { return burstCount - burstIndex; }
+  bool isFirstSlice() { return firstSlice; }
+  void setFirstSlice(bool b) { firstSlice = b; }
 };
 
 std::vector<Process> generateProcesses(const Arguments args);
