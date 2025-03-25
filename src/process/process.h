@@ -44,6 +44,7 @@ class Process {
   Time tau;
   bool cpuBound;
   Time timeRemainingInBurst;
+  Time lastAddedToQueue;
   friend std::ostream& operator<<(std::ostream& out, const Process& p);
 
  public:
@@ -66,6 +67,8 @@ class Process {
   void setTau(Time t) { tau = t; }
   Time getTimeRemaining() const { return timeRemainingInBurst; }
   void setTimeRemaining(Time t) { timeRemainingInBurst = t; }
+  Time getLastAddedToQueueTime() { return lastAddedToQueue; }
+  void setLastAddedToQueueTime(Time t) { lastAddedToQueue = t; }
   const BurstTime& getCurrentBurst() const { return burstTimes[burstIndex]; }
   void incrementBurst() { burstIndex++; }
   bool hasNextBurst() { return burstIndex < burstTimes.size(); }
