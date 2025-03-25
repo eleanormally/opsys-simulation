@@ -87,11 +87,10 @@ struct std::hash<Event> {
 typedef struct SimulationStats {
   BurstTime preemptionCount;
   BurstTime contextSwitchCount;
-  BurstTime turnaroundSum;
-  BurstTime turnaroundCount;
   BurstTime waitSum;
-  BurstTime waitCount;
+  BurstTime roundRobinSliceCount;
   Time totalSimulationTime;
+  std::string algorithmString;
 } SimulationStats;
 
 class Simulation {
@@ -142,6 +141,8 @@ class Simulation {
   bool hasNextEvent() const;
   void addEvent(Event e);
 
+  BurstTime addWaitTime(BurstTime burstTime, Process* p);
+
  public:
   Simulation(const Arguments& _args, SchedulingAlgorithm _algorithm,
              std::vector<Process> _processes)
@@ -165,6 +166,7 @@ class Simulation {
       };
       addEvent(e);
     }
+    stats.algorithmString = toString(_algorithm);
   }
   ~Simulation() { delete queue; }
   SimulationStats run();
