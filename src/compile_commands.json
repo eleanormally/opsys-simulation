@@ -1,8 +1,56 @@
 [
 {
   "directory": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/build",
-  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   -std=gnu++11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk -g -Wall -Wextra -o CMakeFiles/simulation.dir/main.cpp.o -c /Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/main.cpp",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   -std=gnu++11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -g -Wall -Wextra -Wpedantic -Werror -o CMakeFiles/simulation.dir/main.cpp.o -c /Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/main.cpp",
   "file": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/main.cpp",
   "output": "CMakeFiles/simulation.dir/main.cpp.o"
+},
+{
+  "directory": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   -std=gnu++11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -g -Wall -Wextra -Wpedantic -Werror -o CMakeFiles/simulation.dir/arg_parser.cpp.o -c /Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/arg_parser.cpp",
+  "file": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/arg_parser.cpp",
+  "output": "CMakeFiles/simulation.dir/arg_parser.cpp.o"
+},
+{
+  "directory": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   -std=gnu++11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -g -Wall -Wextra -Wpedantic -Werror -o CMakeFiles/simulation.dir/simulation/simulation.cpp.o -c /Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/simulation/simulation.cpp",
+  "file": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/simulation/simulation.cpp",
+  "output": "CMakeFiles/simulation.dir/simulation/simulation.cpp.o"
+},
+{
+  "directory": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   -std=gnu++11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -g -Wall -Wextra -Wpedantic -Werror -o CMakeFiles/simulation.dir/simulation/events.cpp.o -c /Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/simulation/events.cpp",
+  "file": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/simulation/events.cpp",
+  "output": "CMakeFiles/simulation.dir/simulation/events.cpp.o"
+},
+{
+  "directory": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   -std=gnu++11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -g -Wall -Wextra -Wpedantic -Werror -o CMakeFiles/simulation.dir/time/time.cpp.o -c /Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/time/time.cpp",
+  "file": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/time/time.cpp",
+  "output": "CMakeFiles/simulation.dir/time/time.cpp.o"
+},
+{
+  "directory": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   -std=gnu++11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -g -Wall -Wextra -Wpedantic -Werror -o CMakeFiles/simulation.dir/random/random.cpp.o -c /Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/random/random.cpp",
+  "file": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/random/random.cpp",
+  "output": "CMakeFiles/simulation.dir/random/random.cpp.o"
+},
+{
+  "directory": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   -std=gnu++11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -g -Wall -Wextra -Wpedantic -Werror -o CMakeFiles/simulation.dir/queue/ready_queue.cpp.o -c /Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/queue/ready_queue.cpp",
+  "file": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/queue/ready_queue.cpp",
+  "output": "CMakeFiles/simulation.dir/queue/ready_queue.cpp.o"
+},
+{
+  "directory": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   -std=gnu++11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -g -Wall -Wextra -Wpedantic -Werror -o CMakeFiles/simulation.dir/process/process.cpp.o -c /Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/process/process.cpp",
+  "file": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/process/process.cpp",
+  "output": "CMakeFiles/simulation.dir/process/process.cpp.o"
+},
+{
+  "directory": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   -std=gnu++11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk -mmacosx-version-min=15.3 -g -Wall -Wextra -Wpedantic -Werror -o CMakeFiles/simulation.dir/process/generate_processes.cpp.o -c /Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/process/generate_processes.cpp",
+  "file": "/Users/ellie/Documents/RPI/classes/opsys/simulation_project/src/process/generate_processes.cpp",
+  "output": "CMakeFiles/simulation.dir/process/generate_processes.cpp.o"
 }
 ]

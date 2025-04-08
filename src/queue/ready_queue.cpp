@@ -40,11 +40,11 @@ std::string ReadyQueueFCFS::toString() const {
   if (readyQueue.size() == 0) {
     return "[Q empty]";
   }
-  std::string out = "[Q";
-  std::queue<Process*> queueCopy = readyQueue;
+  std::string          out = "[Q";
+  std::deque<Process*> queueCopy = readyQueue;
   while (queueCopy.size() > 0) {
     out += " " + queueCopy.front()->getId().toString();
-    queueCopy.pop();
+    queueCopy.pop_front();
   }
   out += "]";
   return out;

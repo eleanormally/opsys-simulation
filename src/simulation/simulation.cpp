@@ -40,7 +40,9 @@ SimulationStats Simulation::run() {
         handleCpuTimeout(e);
         break;
       case EventType::ProcessEnqueue:
-        addProcessToQueue(e.value.process);
+      case EventType::ProcessEnqueueFront:
+        addProcessToQueue(e.value.process,
+                          e.type == EventType::ProcessEnqueueFront);
         break;
       case EventType::ProcessSelect:
         selectProcess();
@@ -55,7 +57,7 @@ SimulationStats Simulation::run() {
 }
 
 void Simulation::addProcess(Process* p) {
-  addProcessToQueue(p);
+  addProcessToQueue(p, false);
   p->setTimeRemaining(p->getCurrentBurst().cpuBurstTime);
   log(p, "arrived; added to ready queue");
   if (inCPUBurst == nullptr) {
@@ -68,8 +70,12 @@ void Simulation::addProcess(Process* p) {
   }
 }
 
-void Simulation::addProcessToQueue(Process* p) {
-  queue->add(p);
+void Simulation::addProcessToQueue(Process* p, bool front) {
+  if (front) {
+    queue->addFront(p);
+  } else {
+    queue->add(p);
+  }
   p->setLastAddedToQueueTime(globalTime);
 }
 
@@ -125,14 +131,14 @@ Event Simulation::generateCpuBurst(Process* p) {
 }
 Event Simulation::generateIoBurst(Process* p) {
   const BurstTime b = p->getCurrentBurst();
-  Event nextEvent = {
-      .type = EventType::BurstDone,
-      .time = b.ioBurstTime + globalTime + args.contextSwitchMillis,
-      .value =
+  Event           nextEvent = {
+                .type = EventType::BurstDone,
+                .time = b.ioBurstTime + globalTime + args.contextSwitchMillis,
+                .value =
           {
-              .burst{
-                  .process = p,
-                  .isInCpuPhase = false,
+                        .burst{
+                            .process = p,
+                            .isInCpuPhase = false,
               },
           },
   };
@@ -141,8 +147,8 @@ Event Simulation::generateIoBurst(Process* p) {
 
 void Simulation::startProcess(Process* p) {
   processRunning = true;
-  Time burstTime = p->getTimeRemaining();
-  Time totalBurstTime = p->getCurrentBurst().cpuBurstTime;
+  Time  burstTime = p->getTimeRemaining();
+  Time  totalBurstTime = p->getCurrentBurst().cpuBurstTime;
   Event e = generateCpuBurst(p);
   cpuBurstStartTime = globalTime;
   inCPUBurst = p;
@@ -159,7 +165,7 @@ void Simulation::startProcess(Process* p) {
     log(queue->peek(), "will preempt " + p->getId().toString());
     processRunning = false;
     inCPUBurst = nullptr;
-    addEvent(Event::newQueue(p, globalTime + args.contextSwitchMillis));
+    addEvent(Event::newQueue(p, globalTime + args.contextSwitchMillis, false));
     addEvent(Event::newSelect(globalTime + args.contextSwitchMillis));
     stats.preemptionCount = incrementBurstTime(stats.preemptionCount, p);
   } else {
@@ -189,7 +195,8 @@ void Simulation::handleCpuTimeout(const Event& e) {
     log("Time slice expired; preempting process " +
         b.process->getId().toString() + " with " + remaining.toString() +
         " remaining");
-    addEvent(Event::newQueue(b.process, globalTime + args.contextSwitchMillis));
+    addEvent(Event::newQueue(b.process, globalTime + args.contextSwitchMillis,
+                             true));
     stats.preemptionCount =
         incrementBurstTime(stats.preemptionCount, b.process);
   }
@@ -251,7 +258,7 @@ void Simulation::handleIoBurst(const Event& e) {
   b.process->incrementBurst();
   b.process->setTimeRemaining(b.process->getCurrentBurst().cpuBurstTime);
 
-  addProcessToQueue(b.process);
+  addProcessToQueue(b.process, false);
   Time currentBurstDuration = globalTime - cpuBurstStartTime;
   Time predictedRemaining;
   if (inCPUBurst != nullptr) {
@@ -270,8 +277,8 @@ void Simulation::handleIoBurst(const Event& e) {
                        predictedRemaining.toString() + ")");
     inCPUBurst->setTimeRemaining(inCPUBurst->getTimeRemaining() -
                                  currentBurstDuration);
-    addEvent(
-        Event::newQueue(inCPUBurst, globalTime + args.contextSwitchMillis));
+    addEvent(Event::newQueue(inCPUBurst, globalTime + args.contextSwitchMillis,
+                             false));
     stats.preemptionCount =
         incrementBurstTime(stats.preemptionCount, inCPUBurst);
     inCPUBurst = nullptr;
