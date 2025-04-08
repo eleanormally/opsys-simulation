@@ -3,9 +3,6 @@
 #include <cmath>
 
 double Random::next_exp() const {
-  if (ignoreExponential) {
-    return next_uniform();
-  }
   double exp;
   do {
     exp = -1 * log(next_uniform()) / lambda;

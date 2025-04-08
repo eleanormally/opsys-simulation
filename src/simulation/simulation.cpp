@@ -237,10 +237,12 @@ void Simulation::handleCpuBurst(const Event& e) {
     double tauUnderlying =
         (oldTau * (1 - args.burstTimeAlpha) + cpuTime * args.burstTimeAlpha);
     Time newTau = Time(ceil(tauUnderlying));
-    log("Recalculated tau for process " + b.process->getId().toString() +
-        ": old tau " + b.process->getTau().toString() + " ==> new tau " +
-        newTau.toString());
-    b.process->setTau(newTau);
+    if(!args.ignoreExponential) {
+      log("Recalculated tau for process " + b.process->getId().toString() +
+          ": old tau " + b.process->getTau().toString() + " ==> new tau " +
+          newTau.toString());
+      b.process->setTau(newTau);
+    }
     b.process->setTimeRemaining(b.process->getTimeRemaining() - cpuTime);
   }
 
