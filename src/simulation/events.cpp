@@ -38,6 +38,9 @@ int Event::getOrder() const {
     case EventType::ProcessEnqueue:
       return 7;
       break;
+    case EventType::ProcessEnqueueFront:
+      return 0;
+      break;
   }
   return 1000;  //THIS NEVER ACTUALLY HAPPENS GCC JUST CANT STATICALLY ANALYZE
 }

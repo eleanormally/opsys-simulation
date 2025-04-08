@@ -14,7 +14,7 @@ enum class SchedulingAlgorithm {
 
 std::ostream& operator<<(std::ostream& out, const SchedulingAlgorithm& algo);
 std::array<SchedulingAlgorithm, 4> listSchedulingAlgorithms();
-inline const std::string toString(SchedulingAlgorithm a) {
+inline const std::string           toString(SchedulingAlgorithm a) {
   switch (a) {
     case SchedulingAlgorithm::RoundRobin:
       return "RR";
@@ -31,35 +31,39 @@ inline const std::string toString(SchedulingAlgorithm a) {
 class ReadyQueue {
  protected:
   SchedulingAlgorithm algorithmType;
-  size_t timeSlice;
+  size_t              timeSlice;
 
  public:
   virtual ~ReadyQueue() {}
   ReadyQueue(Arguments args, SchedulingAlgorithm algorithm);
   virtual bool isEmpty() const { return true; }
   virtual void add(Process*) { std::cout << "ERROR: USING BASE READY QUEUE\n"; }
-  virtual Process* pop() { return NULL; }
+  virtual void addFront(Process*) {
+    std::cout << "ERROR: USING BASE READY QUEUE\n";
+  }
+  virtual Process*       pop() { return NULL; }
   virtual const Process* peek() { return NULL; }
-  virtual std::string toString() const { return ""; }
-  friend std::ostream& operator<<(std::ostream& out, const ReadyQueue& r);
+  virtual std::string    toString() const { return ""; }
+  friend std::ostream&   operator<<(std::ostream& out, const ReadyQueue& r);
 };
 
 class ReadyQueueFCFS : public ReadyQueue {
-  std::queue<Process*> readyQueue;
+  std::deque<Process*> readyQueue;
 
  public:
   ~ReadyQueueFCFS() {}
   ReadyQueueFCFS(Arguments args, SchedulingAlgorithm algorithm)
       : ReadyQueue(args, algorithm) {}
-  bool isEmpty() const { return readyQueue.empty(); }
-  void add(Process* p) { readyQueue.push(p); }
+  bool     isEmpty() const { return readyQueue.empty(); }
+  void     add(Process* p) { readyQueue.push_back(p); }
+  void     addFront(Process* p) { readyQueue.push_front(p); }
   Process* pop() {
     Process* p = readyQueue.front();
-    readyQueue.pop();
+    readyQueue.pop_front();
     return p;
   }
-  const Process* peek() { return readyQueue.front(); }
-  std::string toString() const;
+  const Process*       peek() { return readyQueue.front(); }
+  std::string          toString() const;
   friend std::ostream& operator<<(std::ostream& out, const ReadyQueue& r);
 };
 
@@ -72,13 +76,16 @@ class ReadyQueueSJF : public ReadyQueue {
       : ReadyQueue(args, algorithm) {}
   bool isEmpty() const { return readyQueue.empty(); }
   void add(Process* p) { readyQueue.push(p); }
+  void addFront(Process*) {
+    throw std::runtime_error("cannot call addFront on SJF queue");
+  }
   Process* pop() {
     Process* p = readyQueue.top();
     readyQueue.pop();
     return p;
   }
-  const Process* peek() { return readyQueue.top(); }
-  std::string toString() const;
+  const Process*       peek() { return readyQueue.top(); }
+  std::string          toString() const;
   friend std::ostream& operator<<(std::ostream& out, const ReadyQueue& r);
 };
 

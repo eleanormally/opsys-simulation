@@ -2,7 +2,7 @@
 #include <iomanip>
 #include <stdexcept>
 Arguments::Arguments(int argc, char** argv) {
-  if (argc != 9) {
+  if (argc != 9 && argc != 10) {
     throw std::runtime_error("Incorrect number of arguments given.");
   }
   processCount = std::atoi(argv[1]);
@@ -31,6 +31,10 @@ Arguments::Arguments(int argc, char** argv) {
   if (contextSwitchMillis == 0 && argv[6][0] != '0') {
     throw std::runtime_error("Cannot parse given context switching time.");
   }
+  ignoreExponential = false;
+  if (std::atoi(argv[7]) == -1) {
+    ignoreExponential = true;
+  }
   burstTimeAlpha = std::atof(argv[7]);
   if (burstTimeAlpha == 0.0 && argv[7][0] != '0') {
     throw std::runtime_error("Cannot parse given burst time alpha value.");
@@ -38,6 +42,14 @@ Arguments::Arguments(int argc, char** argv) {
   timeSlice = std::atoi(argv[8]);
   if (timeSlice == 0 && argv[8][0] != '0') {
     throw std::runtime_error("Cannot parse given time slice.");
+  }
+  roundRobinAlt = false;
+  if (argc == 10) {
+    if (strcmp(argv[9], "RR_ALT") == 0) {
+      roundRobinAlt = true;
+    } else {
+      throw std::runtime_error("Invalid final argument given");
+    }
   }
 }
 

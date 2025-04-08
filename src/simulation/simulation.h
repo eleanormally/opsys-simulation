@@ -8,7 +8,7 @@
 
 typedef struct BurstInstance {
   Process* process;
-  bool isInCpuPhase;
+  bool     isInCpuPhase;
 } BurstInstance;
 
 enum class EventType {
@@ -18,6 +18,7 @@ enum class EventType {
   ProcessSelect,
   ProcessStart,
   ProcessEnqueue,
+  ProcessEnqueueFront,
 };
 template <>
 struct std::hash<EventType> {
@@ -40,6 +41,7 @@ struct std::hash<EventType> {
         h = 5;
         break;
       case EventType::ProcessEnqueue:
+      case EventType::ProcessEnqueueFront:
         h = 6;
         break;
     }
@@ -48,15 +50,15 @@ struct std::hash<EventType> {
 };
 typedef struct Event {
   EventType type;
-  Time time;
+  Time      time;
   union {
-    Process* process;
+    Process*      process;
     BurstInstance burst;
   } value;
-  bool operator<(const Event& e) const;
-  bool operator==(const Event& e) const;
-  int getOrder() const;
-  ID getId() const;
+  bool         operator<(const Event& e) const;
+  bool         operator==(const Event& e) const;
+  int          getOrder() const;
+  ID           getId() const;
   static Event newSelect(Time t) {
     return Event{
         .type = EventType::ProcessSelect,
@@ -64,9 +66,10 @@ typedef struct Event {
         .value = {},
     };
   }
-  static Event newQueue(Process* p, Time t) {
+  static Event newQueue(Process* p, Time t, bool front) {
     return Event{
-        .type = EventType::ProcessEnqueue,
+        .type =
+            front ? EventType::ProcessEnqueueFront : EventType::ProcessEnqueue,
         .time = t,
         .value =
             {
@@ -86,28 +89,28 @@ struct std::hash<Event> {
 };
 
 typedef struct SimulationStats {
-  BurstTime preemptionCount;
-  BurstTime contextSwitchCount;
-  BurstTime waitSum;
-  BurstTime roundRobinSliceCount;
-  Time totalSimulationTime;
+  BurstTime   preemptionCount;
+  BurstTime   contextSwitchCount;
+  BurstTime   waitSum;
+  BurstTime   roundRobinSliceCount;
+  Time        totalSimulationTime;
   std::string algorithmString;
 } SimulationStats;
 
 class Simulation {
-  Time globalTime;
-  const Arguments& args;
-  SchedulingAlgorithm algorithm;
-  std::vector<Process> processes;
+  Time                       globalTime;
+  const Arguments&           args;
+  SchedulingAlgorithm        algorithm;
+  std::vector<Process>       processes;
   std::priority_queue<Event> events;
-  ReadyQueue* queue;
-  size_t nextProcessIdx;
-  Process* inCPUBurst;
-  Time cpuBurstStartTime;
-  Event burstDoneEvent;
-  bool selectionStarted;
-  bool processRunning;
-  SimulationStats stats;
+  ReadyQueue*                queue;
+  size_t                     nextProcessIdx;
+  Process*                   inCPUBurst;
+  Time                       cpuBurstStartTime;
+  Event                      burstDoneEvent;
+  bool                       selectionStarted;
+  bool                       processRunning;
+  SimulationStats            stats;
 
   void log(std::string eventDetails) {
 #ifdef TRUNCATE_OUTPUT
@@ -138,24 +141,24 @@ class Simulation {
   }
 
   const Process& nextProcess() { return processes[nextProcessIdx]; }
-  void popProcess() { nextProcessIdx++; }
-  bool hasNextProcess() { return nextProcessIdx < processes.size(); }
-  void addProcess(Process* p);
-  void handleCpuBurst(const Event& e);
-  void handleCpuTimeout(const Event& e);
-  void handleIoBurst(const Event& e);
-  void selectProcess();
-  void startProcess(Process* p);
+  void           popProcess() { nextProcessIdx++; }
+  bool           hasNextProcess() { return nextProcessIdx < processes.size(); }
+  void           addProcess(Process* p);
+  void           handleCpuBurst(const Event& e);
+  void           handleCpuTimeout(const Event& e);
+  void           handleIoBurst(const Event& e);
+  void           selectProcess();
+  void           startProcess(Process* p);
 
   Event generateIoBurst(Process* p);
   Event generateCpuBurst(Process* p);
 
-  void addProcessToQueue(Process* p);
+  void addProcessToQueue(Process* p, bool front);
 
-  Event popNextEvent();
+  Event        popNextEvent();
   const Event& peekNextEvent();
-  bool hasNextEvent() const;
-  void addEvent(Event e);
+  bool         hasNextEvent() const;
+  void         addEvent(Event e);
 
   BurstTime addWaitTime(BurstTime burstTime, Process* p);
 
@@ -173,12 +176,12 @@ class Simulation {
         processRunning(false) {
     for (size_t i = 0; i < processes.size(); i++) {
       Process* p = &processes[i];
-      Event e = {
-          .type = EventType::ProcessArrived,
-          .time = p->getArrivalTime(),
-          .value =
+      Event    e = {
+             .type = EventType::ProcessArrived,
+             .time = p->getArrivalTime(),
+             .value =
               {
-                  .process = p,
+                     .process = p,
               },
       };
       addEvent(e);
