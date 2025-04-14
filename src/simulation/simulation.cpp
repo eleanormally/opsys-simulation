@@ -57,16 +57,39 @@ SimulationStats Simulation::run() {
 }
 
 void Simulation::addProcess(Process* p) {
+  Time currentBurstDuration = globalTime - cpuBurstStartTime;
+  Time predictedRemaining;
   addProcessToQueue(p, false);
   p->setTimeRemaining(p->getCurrentBurst().cpuBurstTime);
-  log(p, "arrived; added to ready queue");
-  if (inCPUBurst == nullptr) {
-    Event e = {
-        .type = EventType::ProcessSelect,
-        .time = globalTime,
-        .value = {},
-    };
-    addEvent(e);
+  if (inCPUBurst != nullptr) {
+    predictedRemaining = inCPUBurst->getPredictedTime() - currentBurstDuration;
+    if (predictedRemaining > inCPUBurst->getTau()) {
+      predictedRemaining = Time(0);
+    }
+  }
+  if (inCPUBurst != nullptr &&
+      algorithm == SchedulingAlgorithm::ShortestRemainingTime &&
+      predictedRemaining > p->getTau() && processRunning) {
+    log(p, "arrived; preempting " + inCPUBurst->getId().toString());
+    inCPUBurst->setTimeRemaining(inCPUBurst->getTimeRemaining() -
+                                 currentBurstDuration);
+    addEvent(Event::newQueue(inCPUBurst, globalTime + args.contextSwitchMillis,
+                             false));
+    stats.preemptionCount =
+        incrementBurstTime(stats.preemptionCount, inCPUBurst);
+    inCPUBurst = nullptr;
+    processRunning = false;
+    addEvent(Event::newSelect(globalTime + args.contextSwitchMillis));
+  } else {
+    log(p, "arrived; added to ready queue");
+    if (inCPUBurst == nullptr) {
+      Event e = {
+          .type = EventType::ProcessSelect,
+          .time = globalTime,
+          .value = {},
+      };
+      addEvent(e);
+    }
   }
 }
 
@@ -237,11 +260,13 @@ void Simulation::handleCpuBurst(const Event& e) {
     double tauUnderlying =
         (oldTau * (1 - args.burstTimeAlpha) + cpuTime * args.burstTimeAlpha);
     Time newTau = Time(ceil(tauUnderlying));
-    if(!args.ignoreExponential) {
+    if (!args.ignoreExponential) {
       log("Recalculated tau for process " + b.process->getId().toString() +
           ": old tau " + b.process->getTau().toString() + " ==> new tau " +
           newTau.toString());
       b.process->setTau(newTau);
+    } else {
+      b.process->setTau(b.process->getCurrentBurst().cpuBurstTime);
     }
     b.process->setTimeRemaining(b.process->getTimeRemaining() - cpuTime);
   }
