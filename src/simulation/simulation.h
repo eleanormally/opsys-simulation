@@ -132,8 +132,9 @@ class Simulation {
     }
 #endif
     std::string tauString = "";
-    if (algorithm == SchedulingAlgorithm::ShortestJobFirst ||
-        algorithm == SchedulingAlgorithm::ShortestRemainingTime) {
+    if (!args.ignoreExponential &&
+        (algorithm == SchedulingAlgorithm::ShortestJobFirst ||
+         algorithm == SchedulingAlgorithm::ShortestRemainingTime)) {
       tauString = " (tau " + p->getTau().toString() + ")";
     }
     std::cout << "time " << globalTime << ": " << p->toString() << tauString
