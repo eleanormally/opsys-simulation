@@ -45,7 +45,7 @@ Arguments::Arguments(int argc, char** argv) {
   }
   roundRobinAlt = false;
   if (argc == 10) {
-    if (strcmp(argv[9], "RR_ALT") == 0) {
+    if (std::string(argv[9]) == "RR_ALT") {
       roundRobinAlt = true;
     } else {
       throw std::runtime_error("Invalid final argument given");
