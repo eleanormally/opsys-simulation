@@ -40,9 +40,10 @@ SimulationStats Simulation::run() {
         handleCpuTimeout(e);
         break;
       case EventType::ProcessEnqueue:
+        addProcessToQueue(e.value.process, false);
+        break;
       case EventType::ProcessEnqueueFront:
-        addProcessToQueue(e.value.process,
-                          e.type == EventType::ProcessEnqueueFront);
+        addProcessToQueue(e.value.process, e.type == EventType::ProcessEnqueueFront);
         break;
       case EventType::ProcessSelect:
         selectProcess();
@@ -218,8 +219,7 @@ void Simulation::handleCpuTimeout(const Event& e) {
     log("Time slice expired; preempting process " +
         b.process->getId().toString() + " with " + remaining.toString() +
         " remaining");
-    addEvent(Event::newQueue(b.process, globalTime + args.contextSwitchMillis,
-                             true));
+    addEvent(Event::newQueue(b.process, globalTime + args.contextSwitchMillis, args.roundRobinAlt));
     stats.preemptionCount =
         incrementBurstTime(stats.preemptionCount, b.process);
   }
